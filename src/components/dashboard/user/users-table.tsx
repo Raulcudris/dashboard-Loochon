@@ -1,5 +1,6 @@
 'use client';
 
+import { useSelection } from '@/hooks/use-selection';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -15,11 +16,11 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
-import * as React from 'react';
-
-import { useSelection } from '@/hooks/use-selection';
+import React, { useState } from 'react';
 import { UsersTableProps } from './interface/userInterface';
-import { deleteUser } from './services/userService';
+import { DeleteUserModal } from './modal/DeleteUserModal';
+import { EditUserModal } from './modal/EditUserModal';
+import { changeUserStatus } from './services/userService';
 
 export function UsersTable({
   count = 0,
@@ -29,20 +30,50 @@ export function UsersTable({
   onPageChange,
   onRowsPerPageChange,
 }: UsersTableProps): React.JSX.Element {
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+
   const rowIds = React.useMemo(() => rows.map((user) => user.recIdeunikeyReus.toString()), [rows]);
   const { selectAll, deselectAll, selectOne, deselectOne, selected } = useSelection(rowIds);
 
   const selectedSome = (selected?.size ?? 0) > 0 && (selected?.size ?? 0) < rows.length;
   const selectedAll = rows.length > 0 && selected?.size === rows.length;
 
+  const handleOpenEditModal = (user: any) => {
+    setSelectedUser(user);
+    setOpenEditModal(true);
+  };
 
-  const handleDelete = async (userId: number) => {
+  const handleOpenDeleteModal = (user: any) => {
+    setSelectedUser(user);
+    setOpenDeleteModal(true);
+  };
+
+  const handleCloseModals = () => {
+    setSelectedUser(null);
+    setOpenEditModal(false);
+    setOpenDeleteModal(false);
+  };
+
+  const handleSaveUser = async (updatedUser: any) => {
     try {
-      await deleteUser(userId);
-      console.log(`Usuario con ID ${userId} eliminado`);
+      //await updateUser(updatedUser.recIdeunikeyReus, updatedUser);
+      console.log('Usuario actualizado:', updatedUser);
     } catch (error) {
-      console.error("Error al eliminar el usuario:", error);
+      console.error('Error al actualizar el usuario:', error);
     }
+    handleCloseModals();
+  };
+
+  const handleDeleteUser = async (userId: number) => {
+    try {
+      await changeUserStatus(userId);
+      console.log('Usuario eliminado con ID:', userId);
+    } catch (error) {
+      console.error('Error al eliminar el usuario:', error);
+    }
+    handleCloseModals();
   };
 
   return (
@@ -103,10 +134,14 @@ export function UsersTable({
                     <TableCell>{dayjs(row.recFecnacReus).format('MMM D, YYYY')}</TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={1}>
-                        <Button variant="outlined">
+                        <Button variant="outlined" onClick={() => handleOpenEditModal(row)}>
                           Modificar
                         </Button>
-                        <Button variant="outlined" color="error" >
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={() => handleOpenDeleteModal(row)}
+                        >
                           Eliminar
                         </Button>
                       </Stack>
@@ -128,6 +163,20 @@ export function UsersTable({
           rowsPerPageOptions={[5, 10, 25]}
         />
       </Card>
+
+      {/* Modales */}
+      <EditUserModal
+        open={openEditModal}
+        onClose={handleCloseModals}
+        user={selectedUser}
+        onSave={handleSaveUser}
+      />
+      <DeleteUserModal
+        open={openDeleteModal}
+        onClose={handleCloseModals}
+        user={selectedUser}
+        onConfirm={handleDeleteUser}
+      />
     </>
   );
 }

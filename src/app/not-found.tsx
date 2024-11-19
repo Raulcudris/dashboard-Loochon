@@ -14,14 +14,15 @@ export const metadata = { title: `Not found | ${config.site.name}` } satisfies M
 
 export default function NotFound(): React.JSX.Element {
   return (
-    <Box component="main" sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', minHeight: '100%' }}>
-      <Stack spacing={3} sx={{ alignItems: 'center', maxWidth: 'md' }}>
+    <Box component="main"
+         sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', minHeight: '100%' }}>
+      <Stack spacing={3}
+             sx={{ alignItems: 'center', maxWidth: 'md' }}>
         <Box>
-          <Box
-            component="img"
-            alt="Under development"
-            src="/assets/error-404.png"
-            sx={{ display: 'inline-block', height: 'auto', maxWidth: '100%', width: '400px' }}
+          <Box component="img"
+              alt="Under development"
+              src="/assets/error-404.png"
+              sx={{ display: 'inline-block', height: 'auto', maxWidth: '100%', width: '400px' }}
           />
         </Box>
         <Typography variant="h3" sx={{ textAlign: 'center' }}>

@@ -33,6 +33,7 @@
     "@types/cors": "^2.8.17",
     "apexcharts": "3.49.2",
     "axios": "^1.7.7",
+    "cors": "^2.8.5",
     "dashboard-loochon": "file:",
     "dayjs": "1.11.11",
     "dompurify": "^3.1.7",

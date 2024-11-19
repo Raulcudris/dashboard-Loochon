@@ -1,7 +1,8 @@
 'use client';
 
 import type { User } from '@/components/dashboard/user/interface/userInterface';
-import { GetAllUsers } from '@/components/dashboard/user/services/userService';
+import { AddUserModal } from '@/components/dashboard/user/modal/AddUserModal';
+import { createUser, GetAllUsers } from '@/components/dashboard/user/services/userService';
 import { UsersFilters } from '@/components/dashboard/user/users-filters';
 import { UsersTable } from '@/components/dashboard/user/users-table';
 import { generateMetadata } from '@/utils/generateMetadata';
@@ -19,10 +20,11 @@ export default function Page(): React.JSX.Element {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalUsers, setTotalUsers] = useState(0);
+  const [openAddModal, setOpenAddModal] = useState(false);
 
   useEffect(() => {
     const loadUsers = async () => {
-      const { users: getallUsers, total } = await GetAllUsers(page + 1); // Ajuste para la paginación de 1-based index del API
+      const { users: getallUsers, total } = await GetAllUsers(page + 1);
       const filteredUsers = getallUsers.filter((user) =>
         user.recNombreReus.toLowerCase().includes(filter.toLowerCase()) ||
         user.apjCorreoApgm.toLowerCase().includes(filter.toLowerCase())
@@ -35,7 +37,7 @@ export default function Page(): React.JSX.Element {
 
   const handleFilterChange = (newFilter: string) => {
     setFilter(newFilter);
-    setPage(0); // Reiniciar la paginación al aplicar un nuevo filtro
+    setPage(0);
   };
 
   const handlePageChange = (_event: unknown, newPage: number) => {
@@ -44,7 +46,31 @@ export default function Page(): React.JSX.Element {
 
   const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reiniciar la paginación al cambiar la cantidad de filas
+    setPage(0);
+  };
+
+  const handleOpenAddModal = () => {
+    setOpenAddModal(true);
+  };
+
+  const handleCloseAddModal = () => {
+    setOpenAddModal(false);
+  };
+
+  const handleSaveUser = async (newUser: User) => {
+    try {
+      // Llama al servicio para crear el usuario
+      const createdUser = await createUser(newUser);
+      console.log(createdUser)
+
+      // Actualiza el estado con el nuevo usuario
+      setUsers((prevUsers) => [ ...prevUsers]);
+      setTotalUsers((prevTotal) => prevTotal + 1);
+
+      console.log('Usuario añadido:');
+    } catch (error) {
+      console.error('Error al añadir el usuario:', error);
+    }
   };
 
 
@@ -55,7 +81,8 @@ export default function Page(): React.JSX.Element {
           <Typography variant="h4">Usuarios</Typography>
         </Stack>
         <div>
-          <Button startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
+          <Button onClick={handleOpenAddModal}
+                  startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
                   variant="contained">
             Add
           </Button>
@@ -69,6 +96,12 @@ export default function Page(): React.JSX.Element {
         rowsPerPage={rowsPerPage}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleRowsPerPageChange}
+      />
+      {/* Modal para añadir un usuario */}
+      <AddUserModal
+        open={openAddModal}
+        onClose={handleCloseAddModal}
+        onSave={handleSaveUser}
       />
     </Stack>
   );
