@@ -15,6 +15,7 @@ import React, { useEffect, useState } from 'react';
 export const metaData = generateMetadata('Users');
 
 export default function Page(): React.JSX.Element {
+
   const [users, setUsers] = useState<User[]>([]);
   const [filter, setFilter] = useState('');
   const [page, setPage] = useState(0);

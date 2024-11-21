@@ -33,7 +33,7 @@
     "**/*.tsx",
     "next-env.d.ts",
     ".next/types/**/*.ts"
-, "src/config/apiConfig.ts", "next.config.mjs"  ],
+, "src/config/apiRequest.ts", "next.config.mjs"  ],
   "exclude": [
     "node_modules"
   ]

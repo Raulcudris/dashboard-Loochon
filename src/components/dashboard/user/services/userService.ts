@@ -1,5 +1,5 @@
-import api from "@/config/apiConfig";
-import { Data, EditUser, User } from "../interface/userInterface";
+import api from "@/config/apiRequest";
+import { Data, EditUser, NewUser, User } from '../interface/userInterface';
 
 // Función para obtener todos los usuarios
 export const GetAllUsers = async (page: number = 1): Promise<{ users: User[]; total: number }> => {
@@ -14,27 +14,24 @@ export const GetAllUsers = async (page: number = 1): Promise<{ users: User[]; to
 };
 
 // Función para crear un usuario
-export const createUser = async (body: User): Promise<Data> => {
-  const data = {
-    rspData: [
-      {
-        ...body,
-        recNroregReus: 'NA',
-        recNomusuReus: `${body.recNombreReus} ${body.recApelidReus}`,
-        recImgvisReus: 'pr10157781214290956_800x500.png*9ae46c3d-a4d4-49b1-ae8f-20ebd27bcaf6',
-        sisCodpaiSipa: '205',
-        sisIdedptSidp: '205020',
-        sisCodproSipr: '205020001000',
-        recCodposReus: '205020001000',
-        recGeolatReus: 0.0,
-        recGeolonReus: 0.0,
-      },
-    ],
-  };
-
-  const response = await api.post<Data>(`/api/users/create`, data);
-  return response.data;
+export const createUser = async (newUser: NewUser): Promise<void> => {
+  try {
+    const requestData =
+    {
+      rspValue: "",
+      rspMessage: "",
+      rspParentKey: "",
+      rspAppKey: "",
+      rspData: {newUser},
+    };
+    console.log("{}",requestData)
+    await api.post(`/api/users/create`, requestData);
+  } catch (error) {
+    console.error("Error al crear el usuario:", error);
+    throw error;
+  }
 };
+
 
 // Función para obtener un usuario por su ID
 export const getUserById = async (id: string): Promise<User> => {

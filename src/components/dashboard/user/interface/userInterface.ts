@@ -1,36 +1,63 @@
+// Estructura de ciudad dentro de `CreateUser`
+export interface NewUser {
+  recIdeunikeyReus?: number;
+  recNroregReus?: string;
+  recNiknamReus?: string;
+  recNombreReus: string;
+  recApelidReus: string;
+  recFecnacReus?: string;
+  recSexusuReus?: string;
+  recNomusuReus?: string;
+  recImgvisReus?: string;
+  recDirresReus?: string;
+  recTelefoReus?: string;
+  apjCorreoApgm?: string;
+  sisCodpaiSipa?: string;
+  sisIdedptSidp?: string;
+  sisCodproSipr?: string;
+  recCodposReus?: string;
+  recGeolatReus?: number;
+  recGeolonReus?: number;
+  sisCountaRkey?: number;
+  sisCountbRkey?: number;
+  sisCountcRkey?: number;
+  sisCountdRkey?: number;
+  sisCounteRkey?: number;
+  sisCountfRkey?: number;
+  recEstregReus?: string;
+}
 // Estructura del usuario que utiliza la API (backend)
 export interface User {
   recIdeunikeyReus: number;
-  recNroregReus: string;
-  recNiknamReus: string;
-  recNroideReus: string;
   recNombreReus: string;
   recApelidReus: string;
   recFecnacReus: string;
-  recSexusuReus: string;
-  recNomusuReus: string;
-  recImgvisReus: string;
   recDirresReus: string;
   recTelefoReus: string;
   apjCorreoApgm: string;
   sisCodpaiSipa: string;
-  sisIdedptSidp: string;
-  sisCodproSipr: string;
-  recCodposReus: string;
-  recGeolatReus: number;
-  recGeolonReus: number;
   sisCountaRkey: number;
   sisCountbRkey: number;
   sisCountcRkey: number;
   sisCountdRkey: number;
   sisCounteRkey: number;
   sisCountfRkey: number;
-  recEstregReus: string;
-  resumEstadist: ResumEstadist;
+  recNroregReus: string;
+  recNiknamReus: string;
+  recNroideReus: string;
+  recSexusuReus: string;
+  recNomusuReus: string;
+  recImgvisReus: string;
+  sisIdedptSidp: string;
+  sisCodproSipr: string;
+  recCodposReus: string;
+  recGeolatReus: number;
+  recGeolonReus: number;
+  recEstregReus: number;
+  resumEstadist?: ResumEstadist;
   city?: City;
 }
 
-// Estructura de ciudad dentro de `CreateUser`
 export interface City {
   sisCodproSipr: string;
   sisNombreSipr: string;

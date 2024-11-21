@@ -35,10 +35,19 @@ export function UsersTable({
   const [selectedUser, setSelectedUser] = useState<any>(null);
 
   const rowIds = React.useMemo(() => rows.map((user) => user.recIdeunikeyReus.toString()), [rows]);
+
   const { selectAll, deselectAll, selectOne, deselectOne, selected } = useSelection(rowIds);
 
   const selectedSome = (selected?.size ?? 0) > 0 && (selected?.size ?? 0) < rows.length;
+
   const selectedAll = rows.length > 0 && selected?.size === rows.length;
+
+  // Definir el tipo del mapa de estados
+  const estadoMap: Record<number, { label: string; color: string }> = {
+    1: { label: 'Activo', color: 'green' },
+    2: { label: 'Inactivo', color: 'orange' },
+    3: { label: 'Eliminada', color: 'red' },
+  };
 
   const handleOpenEditModal = (user: any) => {
     setSelectedUser(user);
@@ -83,7 +92,7 @@ export function UsersTable({
           <Table sx={{ minWidth: '800px' }}>
             <TableHead>
               <TableRow>
-                <TableCell padding="checkbox">
+                <TableCell padding="checkbox" align='center'>
                   <Checkbox
                     checked={selectedAll}
                     indeterminate={selectedSome}
@@ -96,18 +105,20 @@ export function UsersTable({
                     }}
                   />
                 </TableCell>
-                <TableCell>Nombre</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Localización</TableCell>
-                <TableCell>Teléfono</TableCell>
-                <TableCell>Fecha de nacimiento</TableCell>
-                <TableCell>Acciones</TableCell>
+                <TableCell align='center'>Nombre</TableCell>
+                <TableCell align='center'>Email</TableCell>
+                <TableCell align='center'>Direccion</TableCell>
+                <TableCell align='center'>Ciudad</TableCell>
+                <TableCell align='center'>Departamento</TableCell>
+                <TableCell align='center' >Teléfono</TableCell>
+                <TableCell align='center' >Fecha de nacimiento</TableCell>
+                <TableCell align='center'>Estado</TableCell>
+                <TableCell align='center'>Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {rows.map((row) => {
                 const isSelected = selected?.has(row.recIdeunikeyReus.toString());
-
                 return (
                   <TableRow hover key={row.recIdeunikeyReus} selected={isSelected}>
                     <TableCell padding="checkbox">
@@ -128,20 +139,32 @@ export function UsersTable({
                         <Typography variant="subtitle2">{`${row.recNombreReus} ${row.recApelidReus}`}</Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell>{row.apjCorreoApgm}</TableCell>
-                    <TableCell>{row.recDirresReus}</TableCell>
-                    <TableCell>{row.recTelefoReus}</TableCell>
-                    <TableCell>{dayjs(row.recFecnacReus).format('MMM D, YYYY')}</TableCell>
+                    <TableCell align='center'>{row.apjCorreoApgm}</TableCell>
+                    <TableCell align='center'>{row.recDirresReus}</TableCell>
+                    <TableCell align='center'>{row.city?.sisNombreSimu}</TableCell>
+                    <TableCell align='center'>{row.city?.sisNombreSidp}</TableCell>
+                    <TableCell align='center'>{row.recTelefoReus}</TableCell>
+                    <TableCell>{dayjs(row.recFecnacReus).format('DD/MM/YYYY')}</TableCell>
+                    <TableCell align='center'>
+                      <Typography variant="body2"
+                                  sx={{  color: estadoMap[row.recEstregReus]?.color || 'gray', // Color dinámico
+                                         fontWeight: 'bold', // Opcional: negrita para destacar el estado
+                                     }}>
+                         {estadoMap[row.recEstregReus]?.label || 'Desconocido'}
+                      </Typography>
+                    </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={1}>
-                        <Button variant="outlined" onClick={() => handleOpenEditModal(row)}>
+                        <Button variant="outlined"
+                                onClick={() => handleOpenEditModal(row)}>
                           Modificar
                         </Button>
                         <Button
                           variant="outlined"
                           color="error"
                           onClick={() => handleOpenDeleteModal(row)}
-                        >
+                          disabled={estadoMap[row.recEstregReus]?.label === 'Eliminada'}
+                          >
                           Eliminar
                         </Button>
                       </Stack>
