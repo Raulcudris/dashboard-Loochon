@@ -2,7 +2,7 @@
 
 import type { User } from '@/components/dashboard/user/interface/userInterface';
 import { AddUserModal } from '@/components/dashboard/user/modal/AddUserModal';
-import { createUser, GetAllUsers } from '@/components/dashboard/user/services/userService';
+import { GetAllUsers } from '@/components/dashboard/user/services/userService';
 import { UsersFilters } from '@/components/dashboard/user/users-filters';
 import { UsersTable } from '@/components/dashboard/user/users-table';
 import { generateMetadata } from '@/utils/generateMetadata';
@@ -15,7 +15,6 @@ import React, { useEffect, useState } from 'react';
 export const metaData = generateMetadata('Users');
 
 export default function Page(): React.JSX.Element {
-
   const [users, setUsers] = useState<User[]>([]);
   const [filter, setFilter] = useState('');
   const [page, setPage] = useState(0);
@@ -23,16 +22,21 @@ export default function Page(): React.JSX.Element {
   const [totalUsers, setTotalUsers] = useState(0);
   const [openAddModal, setOpenAddModal] = useState(false);
 
-  useEffect(() => {
-    const loadUsers = async () => {
-      const { users: getallUsers, total } = await GetAllUsers(page + 1);
-      const filteredUsers = getallUsers.filter((user) =>
+  const loadUsers = async () => {
+    try {
+      const { users: fetchedUsers, total } = await GetAllUsers(page + 1);
+      const filteredUsers = fetchedUsers.filter((user) =>
         user.recNombreReus.toLowerCase().includes(filter.toLowerCase()) ||
         user.apjCorreoApgm.toLowerCase().includes(filter.toLowerCase())
       );
       setUsers(filteredUsers);
       setTotalUsers(total);
-    };
+    } catch (error) {
+      console.error('Error al cargar usuarios:', error);
+    }
+  };
+
+  useEffect(() => {
     loadUsers();
   }, [page, rowsPerPage, filter]);
 
@@ -58,22 +62,14 @@ export default function Page(): React.JSX.Element {
     setOpenAddModal(false);
   };
 
-  const handleSaveUser = async (newUser: User) => {
+  const handleUserAdded = async () => {
     try {
-      // Llama al servicio para crear el usuario
-      const createdUser = await createUser(newUser);
-      console.log(createdUser)
-
-      // Actualiza el estado con el nuevo usuario
-      setUsers((prevUsers) => [ ...prevUsers]);
-      setTotalUsers((prevTotal) => prevTotal + 1);
-
-      console.log('Usuario añadido:');
+      await loadUsers();
+      handleCloseAddModal();
     } catch (error) {
-      console.error('Error al añadir el usuario:', error);
+      console.error('Error al refrescar la lista de usuarios:', error);
     }
   };
-
 
   return (
     <Stack spacing={3}>
@@ -82,10 +78,12 @@ export default function Page(): React.JSX.Element {
           <Typography variant="h4">Usuarios</Typography>
         </Stack>
         <div>
-          <Button onClick={handleOpenAddModal}
-                  startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
-                  variant="contained">
-            Add
+          <Button
+            onClick={handleOpenAddModal}
+            startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
+            variant="contained"
+          >
+            Añadir
           </Button>
         </div>
       </Stack>
@@ -97,12 +95,12 @@ export default function Page(): React.JSX.Element {
         rowsPerPage={rowsPerPage}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleRowsPerPageChange}
+        onRefresh={loadUsers} // Pasar método para refrescar la lista
       />
-      {/* Modal para añadir un usuario */}
       <AddUserModal
         open={openAddModal}
         onClose={handleCloseAddModal}
-        onSave={handleSaveUser}
+        onUserAdded={handleUserAdded}
       />
     </Stack>
   );

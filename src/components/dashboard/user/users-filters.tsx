@@ -20,7 +20,7 @@ export function UsersFilters({ onFilterChange }: UsersFiltersProps): React.JSX.E
       <OutlinedInput
         onChange={handleInputChange}
         fullWidth
-        placeholder="Search user"
+        placeholder="Buscar Usuario"
         startAdornment={
           <InputAdornment position="start">
             <MagnifyingGlassIcon fontSize="var(--icon-fontSize-md)" />

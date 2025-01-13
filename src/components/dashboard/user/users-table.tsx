@@ -17,10 +17,10 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
 import React, { useState } from 'react';
-import { UsersTableProps } from './interface/userInterface';
+import { UsersTableProps, EditUser, NewUser } from './interface/userInterface';
 import { DeleteUserModal } from './modal/DeleteUserModal';
 import { EditUserModal } from './modal/EditUserModal';
-import { changeUserStatus } from './services/userService';
+import { editUser, changeUserStatus } from './services/userService';
 
 export function UsersTable({
   count = 0,
@@ -29,32 +29,31 @@ export function UsersTable({
   rowsPerPage = 5,
   onPageChange,
   onRowsPerPageChange,
-}: UsersTableProps): React.JSX.Element {
+  onRefresh,
+}: UsersTableProps & { onRefresh: () => void }): React.JSX.Element {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<EditUser | null>(null);
 
   const rowIds = React.useMemo(() => rows.map((user) => user.recIdeunikeyReus.toString()), [rows]);
 
   const { selectAll, deselectAll, selectOne, deselectOne, selected } = useSelection(rowIds);
 
   const selectedSome = (selected?.size ?? 0) > 0 && (selected?.size ?? 0) < rows.length;
-
   const selectedAll = rows.length > 0 && selected?.size === rows.length;
 
-  // Definir el tipo del mapa de estados
   const estadoMap: Record<number, { label: string; color: string }> = {
     1: { label: 'Activo', color: 'green' },
     2: { label: 'Inactivo', color: 'orange' },
     3: { label: 'Eliminada', color: 'red' },
   };
 
-  const handleOpenEditModal = (user: any) => {
+  const handleOpenEditModal = (user: EditUser) => {
     setSelectedUser(user);
     setOpenEditModal(true);
   };
 
-  const handleOpenDeleteModal = (user: any) => {
+  const handleOpenDeleteModal = (user: EditUser) => {
     setSelectedUser(user);
     setOpenDeleteModal(true);
   };
@@ -65,34 +64,38 @@ export function UsersTable({
     setOpenDeleteModal(false);
   };
 
-  const handleSaveUser = async (updatedUser: any) => {
+  const handleSaveUser = async (updatedUser: NewUser) => {
     try {
-      //await updateUser(updatedUser.recIdeunikeyReus, updatedUser);
-      console.log('Usuario actualizado:', updatedUser);
+      await editUser(updatedUser);
+      alert("Usuario actualizado con éxito.");
+      handleCloseModals();
+      onRefresh(); // Refrescar la lista de usuarios después de actualizar
     } catch (error) {
-      console.error('Error al actualizar el usuario:', error);
+      console.error("Error al actualizar el usuario:", error);
+      alert("Hubo un problema al actualizar el usuario.");
     }
-    handleCloseModals();
   };
 
   const handleDeleteUser = async (userId: number) => {
     try {
       await changeUserStatus(userId);
-      console.log('Usuario eliminado con ID:', userId);
+      alert('Usuario eliminado con éxito.');
+      handleCloseModals();
+      onRefresh(); // Refrescar la lista de usuarios después de eliminar
     } catch (error) {
       console.error('Error al eliminar el usuario:', error);
+      alert('Hubo un problema al eliminar el usuario.');
     }
-    handleCloseModals();
   };
 
   return (
-    <>
+    <div>
       <Card>
         <Box sx={{ overflowX: 'auto' }}>
           <Table sx={{ minWidth: '800px' }}>
             <TableHead>
               <TableRow>
-                <TableCell padding="checkbox" align='center'>
+                <TableCell padding="checkbox" align="center">
                   <Checkbox
                     checked={selectedAll}
                     indeterminate={selectedSome}
@@ -105,15 +108,15 @@ export function UsersTable({
                     }}
                   />
                 </TableCell>
-                <TableCell align='center'>Nombre</TableCell>
-                <TableCell align='center'>Email</TableCell>
-                <TableCell align='center'>Direccion</TableCell>
-                <TableCell align='center'>Ciudad</TableCell>
-                <TableCell align='center'>Departamento</TableCell>
-                <TableCell align='center' >Teléfono</TableCell>
-                <TableCell align='center' >Fecha de nacimiento</TableCell>
-                <TableCell align='center'>Estado</TableCell>
-                <TableCell align='center'>Acciones</TableCell>
+                <TableCell align="center">Nombre</TableCell>
+                <TableCell align="center">Email</TableCell>
+                <TableCell align="center">Dirección</TableCell>
+                <TableCell align="center">Ciudad</TableCell>
+                <TableCell align="center">Departamento</TableCell>
+                <TableCell align="center">Teléfono</TableCell>
+                <TableCell align="center">Fecha de nacimiento</TableCell>
+                <TableCell align="center">Estado</TableCell>
+                <TableCell align="center">Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -139,24 +142,26 @@ export function UsersTable({
                         <Typography variant="subtitle2">{`${row.recNombreReus} ${row.recApelidReus}`}</Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell align='center'>{row.apjCorreoApgm}</TableCell>
-                    <TableCell align='center'>{row.recDirresReus}</TableCell>
-                    <TableCell align='center'>{row.city?.sisNombreSimu}</TableCell>
-                    <TableCell align='center'>{row.city?.sisNombreSidp}</TableCell>
-                    <TableCell align='center'>{row.recTelefoReus}</TableCell>
+                    <TableCell align="center">{row.apjCorreoApgm}</TableCell>
+                    <TableCell align="center">{row.recDirresReus}</TableCell>
+                    <TableCell align="center">{row.city?.sisNombreSimu || 'N/A'}</TableCell>
+                    <TableCell align="center">{row.city?.sisNombreSidp || 'N/A'}</TableCell>
+                    <TableCell align="center">{row.recTelefoReus}</TableCell>
                     <TableCell>{dayjs(row.recFecnacReus).format('DD/MM/YYYY')}</TableCell>
-                    <TableCell align='center'>
-                      <Typography variant="body2"
-                                  sx={{  color: estadoMap[row.recEstregReus]?.color || 'gray', // Color dinámico
-                                         fontWeight: 'bold', // Opcional: negrita para destacar el estado
-                                     }}>
-                         {estadoMap[row.recEstregReus]?.label || 'Desconocido'}
+                    <TableCell align="center">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: estadoMap[row.recEstregReus]?.color || 'gray',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        {estadoMap[row.recEstregReus]?.label || 'Desconocido'}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={1}>
-                        <Button variant="outlined"
-                                onClick={() => handleOpenEditModal(row)}>
+                        <Button variant="outlined" onClick={() => handleOpenEditModal(row)}>
                           Modificar
                         </Button>
                         <Button
@@ -164,7 +169,7 @@ export function UsersTable({
                           color="error"
                           onClick={() => handleOpenDeleteModal(row)}
                           disabled={estadoMap[row.recEstregReus]?.label === 'Eliminada'}
-                          >
+                        >
                           Eliminar
                         </Button>
                       </Stack>
@@ -198,8 +203,8 @@ export function UsersTable({
         open={openDeleteModal}
         onClose={handleCloseModals}
         user={selectedUser}
-        onConfirm={handleDeleteUser}
+        onConfirm={() => handleDeleteUser(selectedUser?.recIdeunikeyReus!)}
       />
-    </>
+    </div>
   );
 }

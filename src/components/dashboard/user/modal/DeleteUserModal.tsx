@@ -38,23 +38,30 @@ export const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
   };
 
   return (
-    <Modal open={open} onClose={onClose} aria-labelledby="delete-user-modal">
-      <Box sx={modalStyle}>
-        <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-          ¿Estás seguro de eliminar al usuario?
-        </Typography>
-        <Typography sx={{ mb: 2 }}>
-          {user?.recNombreReus} {user?.recApelidReus}
-        </Typography>
-        <Stack direction="row" spacing={2}>
-          <Button variant="contained" color="error" onClick={handleConfirm}>
-            Eliminar
-          </Button>
-          <Button variant="outlined" onClick={onClose}>
-            Cancelar
-          </Button>
-        </Stack>
-      </Box>
-    </Modal>
+  <Modal open={open} onClose={onClose} aria-labelledby="delete-user-modal">
+  <Box sx={{
+      ...modalStyle,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center', // Alinear todo el contenido al centro
+      justifyContent: 'center', // Centrar verticalmente el contenido si es necesario
+    }}
+  >
+    <Typography variant="h6" component="h2" sx={{ mb: 2, textAlign: 'center' }}>
+      ¿Estás seguro de eliminar al usuario?
+    </Typography>
+    <Typography sx={{ mb: 2, textAlign: 'center' }}>
+      {user?.recNombreReus} {user?.recApelidReus}
+    </Typography>
+    <Stack direction="row" spacing={2} sx={{ mt: 2, justifyContent: 'center' }}>
+      <Button variant="contained" color="error" onClick={handleConfirm}>
+        Eliminar
+      </Button>
+      <Button variant="outlined" onClick={onClose}>
+        Cancelar
+      </Button>
+    </Stack>
+  </Box>
+</Modal>
   );
 };

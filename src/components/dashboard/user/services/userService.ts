@@ -1,8 +1,10 @@
 import api from "@/config/apiRequest";
 import { Data, EditUser, NewUser, User } from '../interface/userInterface';
 
-// Función para obtener todos los usuarios
-export const GetAllUsers = async (page: number = 1): Promise<{ users: User[]; total: number }> => {
+// Obtener todos los usuarios
+export const GetAllUsers = async (
+  page: number = 1
+): Promise<{ users: User[]; total: number }> => {
   try {
     const response = await api.get<Data>(`/api/users/getall`, { params: { page } });
     const { rspData, rspPagination } = response.data;
@@ -13,68 +15,53 @@ export const GetAllUsers = async (page: number = 1): Promise<{ users: User[]; to
   }
 };
 
-// Función para crear un usuario
+// Crear usuario
 export const createUser = async (newUser: NewUser): Promise<void> => {
   try {
-    const requestData =
-    {
+    const completeUser = {
+      ...newUser,
+      recNroregReus: "NA",
+      recNiknamReus: newUser.recNombreReus || "default",
+      recNomusuReus: `${newUser.recNombreReus} ${newUser.recApelidReus}`,
+      recImgvisReus: "pr10157781214290956_800x500.png*9ae46c3d-a4d4-49b1-ae8f-20ebd27bcaf6",
+      sisCodpaiSipa: "170",
+      sisIdedptSidp: "205020",
+      sisCodproSipr: "205020001000",
+      recCodposReus: "205020001000",
+      recGeolatReus: 0.0,
+      recGeolonReus: 0.0,
+    };
+    console.log({ completeUser })
+    const requestData = {
       rspValue: "",
       rspMessage: "",
       rspParentKey: "",
       rspAppKey: "",
-      rspData: {newUser},
+      rspData: [completeUser],
     };
-    console.log("{}",requestData)
-    await api.post(`/api/users/create`, requestData);
+
+    console.log("Request Data:", requestData); // Depuración
+
+    const response = await api.post(`/api/users/create`, requestData);
+    console.log("Response Data:", response.data); // Depuración de la respuesta
   } catch (error) {
-    console.error("Error al crear el usuario:", error);
     throw error;
   }
 };
 
-
-// Función para obtener un usuario por su ID
-export const getUserById = async (id: string): Promise<User> => {
-  const response = await api.get<Data>(`/api/users`, {
-    params: { currentpage: 1, pagesize: 10, parameter: 'PKEY', filter: id },
-  });
-  return response.data.rspData[0];
-};
-
-// Función para actualizar un usuario
-export const editUser = async (user: EditUser): Promise<void> => {
+// Actualizar un usuario existente
+export const editUser = async (user: NewUser): Promise<void> => {
   try {
     const requestData = {
       rspData: [
         {
-          recIdeunikeyReus: user.recIdeunikeyReus,
-          recNroregReus: user.recNroregReus || 'NA',
-          recNiknamReus: user.recNiknamReus || 'NA',
-          recNombreReus: user.recNombreReus || '',
-          recApelidReus: user.recApelidReus || '',
-          recFecnacReus: user.recFecnacReus || new Date().toISOString().split('T')[0],
-          recSexusuReus: user.recSexusuReus || '1',
-          recNomusuReus: user.recNomusuReus || `${user.recNombreReus} ${user.recApelidReus}`,
-          recImgvisReus: user.recImgvisReus || 'https://example.com/default-avatar.jpg',
-          recDirresReus: user.recDirresReus || 'No street',
-          recTelefoReus: user.recTelefoReus || 'No phone',
-          apjCorreoApgm: user.apjCorreoApgm || 'No email',
-          sisCodpaiSipa: user.sisCodpaiSipa || '170',
-          sisIdedptSidp: user.sisIdedptSidp || '205020',
-          sisCodproSipr: user.sisCodproSipr || '205020001000',
-          recCodposReus: user.recCodposReus || '20001001',
-          recGeolatReus: user.recGeolatReus || 0.0,
-          recGeolonReus: user.recGeolonReus || 0.0,
-          sisCountaRkey: user.sisCountaRkey || 0,
-          sisCountbRkey: user.sisCountbRkey || 0,
-          sisCountcRkey: user.sisCountcRkey || 0,
-          sisCountdRkey: user.sisCountdRkey || 0,
-          sisCounteRkey: user.sisCounteRkey || 0,
-          sisCountfRkey: user.sisCountfRkey || 0,
-          recEstregReus: user.recEstregReus || '3'
-        }
-      ]
+          ...user,
+          recNomusuReus: `${user.recNombreReus || ""} ${user.recApelidReus || ""}`.trim(),
+        },
+      ],
     };
+
+    console.log("Edit User Request Data:", requestData);
 
     await api.put(`/api/users/update`, requestData);
   } catch (error) {
@@ -83,27 +70,35 @@ export const editUser = async (user: EditUser): Promise<void> => {
   }
 };
 
-// Función para cambiar el estado de un usuario
-export const changeUserStatus = async (id: number): Promise<Data> => {
-  const data = [
-    {
-      recPKey: id,
-      recEstreg: 2, // Suponiendo que este campo indica el cambio de estado
-    },
-  ];
-
-  const response = await api.patch<Data>(`/api/users/changestatus`, data);
-  return response.data;
+// Eliminar usuario
+export const deleteUser = async (id: number): Promise<void> => {
+  try {
+    const data = [{ recPKey: id }];
+    await api.patch(`/api/users/delete`, {
+      data,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error('Error al eliminar el usuario:', error);
+    throw error;
+  }
 };
 
-// Función para eliminar un usuario
-export const deleteUser = async (id: number): Promise<void> => {
-  const data = [{ recPKey: id }];
-
-  await api.patch(`/api/users/delete`, {
-    data: data,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+// Cambiar estado de usuario
+export const changeUserStatus = async (id: number): Promise<Data> => {
+  try {
+    const data = [
+      {
+        recPKey: id,
+        recEstreg: 2, // Ejemplo de nuevo estado
+      },
+    ];
+    const response = await api.patch<Data>(`/api/users/changestatus`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al cambiar el estado del usuario:', error);
+    throw error;
+  }
 };
