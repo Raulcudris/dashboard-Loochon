@@ -108,15 +108,14 @@ export interface EditUser extends Partial<NewUser> {
 
 // **Props para el componente `UsersTable`**
 export interface UsersTableProps {
-  count?: number; // Total de usuarios
-  page?: number; // Página actual
-  rows?: User[]; // Lista de usuarios a mostrar
-  rowsPerPage?: number; // Cantidad de usuarios por página
-  onPageChange?: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
-  onRowsPerPageChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  count: number; // Total de usuarios (requerido para paginación)
+  page: number; // Página actual (requerido para paginación)
+  rows: User[]; // Lista de usuarios a mostrar (requerido para renderizar la tabla)
+  rowsPerPage: number; // Cantidad de usuarios por página (requerido para paginación)
+  onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void; // Callback para cambiar de página
+  onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void; // Callback para cambiar la cantidad de filas por página
   onRefresh: () => void; // Método para refrescar la lista de usuarios
 }
-
 // **Props para el componente `EditUserModal`**
 export interface UserEditModalProps {
   open: boolean; // Estado del modal (abierto/cerrado)
