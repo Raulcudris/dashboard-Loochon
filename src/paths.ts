@@ -9,7 +9,7 @@ export const paths = {
     overview: '/dashboard',
     users: '/dashboard/users',
     account: '/dashboard/account',
-    integrations: '/dashboard/integrations',
+    coordenates: '/dashboard/coordenates',
     settings: '/dashboard/settings',
   },
   errors: { notFound: '/errors/not-found' },

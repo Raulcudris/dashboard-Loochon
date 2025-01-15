@@ -9,6 +9,7 @@ export const paths = {
     overview: '/dashboard',
     account: '/dashboard/account',
     users: '/dashboard/users',
+    coordenates: '/dashboard/coordenates',
     integrations: '/dashboard/integrations',
     settings: '/dashboard/settings',
   },
