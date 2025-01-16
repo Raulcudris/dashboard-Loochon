@@ -3,7 +3,7 @@
 import { Logo } from '@/components/core/logo';
 import { paths } from '@/config/paths';
 import { isNavItemActive } from '@/lib/is-nav-item-active';
-import type { NavItemConfig } from '@/types/nav';
+import type { NavItemConfig } from '@/interface/nav';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';

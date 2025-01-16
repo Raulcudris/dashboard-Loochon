@@ -1,6 +1,6 @@
 'use client';
 
-import type { User } from '@/types/user';
+import type { User } from '@/interface/user';
 
 function generateToken(): string {
   const arr = new Uint8Array(12);

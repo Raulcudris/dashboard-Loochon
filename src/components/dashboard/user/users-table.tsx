@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import {
   Avatar,
@@ -17,9 +15,9 @@ import {
   Stack,
 } from '@mui/material';
 import dayjs from 'dayjs';
-import { EditUserModal } from './modal/EditUserModal';
-import { DeleteUserModal } from './modal/DeleteUserModal';
-import { UsersTableProps, EditUser } from './interface/userInterface';
+import { EditUserModal } from './modals/EditUserModal';
+import { DeleteUserModal } from './modals/DeleteUserModal';
+import { EditUser, UsersTableProps } from '@/interface/userInterface';
 
 export function UsersTable({
   rows,
@@ -41,13 +39,17 @@ export function UsersTable({
   };
 
   const handleOpenEditModal = (user: EditUser) => {
-    setSelectedUser(user);
-    setOpenEditModal(true);
+    if (user) {
+      setSelectedUser(user);
+      setOpenEditModal(true);
+    }
   };
 
   const handleOpenDeleteModal = (user: EditUser) => {
-    setSelectedUser(user);
-    setOpenDeleteModal(true);
+    if (user) {
+      setSelectedUser(user);
+      setOpenDeleteModal(true);
+    }
   };
 
   const handleCloseModals = () => {
@@ -133,6 +135,7 @@ export function UsersTable({
         page={page}
         rowsPerPage={rowsPerPage}
         onPageChange={onPageChange}
+        labelRowsPerPage="Usuarios por páginas"
         onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={[5, 10, 25]}
       />

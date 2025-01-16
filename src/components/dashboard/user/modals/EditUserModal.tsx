@@ -7,7 +7,8 @@ import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
-import { EditUser, NewUser, defaultNewUser } from "../interface/userInterface";
+import { editUser } from "../../../../services/userService";
+import { defaultNewUser, EditUser, NewUser } from '@/interface/userInterface';
 
 const modalStyle = {
   position: 'absolute',
@@ -25,7 +26,7 @@ interface EditUserModalProps {
   open: boolean;
   onClose: () => void;
   user: EditUser | null;
-  onSave: (updatedUser: NewUser) => void;
+  onSave: () => void; // Callback para refrescar la lista después de guardar
 }
 
 export const EditUserModal: React.FC<EditUserModalProps> = ({
@@ -39,29 +40,36 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
   useEffect(() => {
     if (user) {
       setUpdatedUser(user);
+    } else {
+      setUpdatedUser(null);
     }
   }, [user]);
 
   const handleInputChange = (field: keyof EditUser, value: string | number) => {
     if (updatedUser) {
-      setUpdatedUser({
-        ...updatedUser,
+      setUpdatedUser((prev) => ({
+        ...prev!,
         [field]: value,
-      });
+      }));
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (updatedUser) {
-      // Generar un objeto compatible con `NewUser`
-      const userToSave: NewUser = {
-        ...defaultNewUser, // Valores predeterminados
-        ...updatedUser, // Sobrescribir con los valores del usuario en edición
-        recNomusuReus: `${updatedUser.recNombreReus || ''} ${updatedUser.recApelidReus || ''}`.trim(),
-      };
-
-      onSave(userToSave);
-      onClose();
+      try {
+        const userToSave: NewUser = {
+          ...defaultNewUser,
+          ...updatedUser,
+          recNomusuReus: `${updatedUser.recNombreReus || ''} ${updatedUser.recApelidReus || ''}`.trim(),
+        };
+        await editUser(userToSave);
+        alert('Usuario actualizado con éxito.');
+        onSave(); // Refrescar la lista de usuarios
+        onClose(); // Cerrar el modal
+      } catch (error) {
+        console.error('Error al actualizar el usuario:', error);
+        alert('Hubo un error al actualizar el usuario. Por favor, inténtelo de nuevo.');
+      }
     }
   };
 

@@ -12,7 +12,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
 } from '@mui/material';
 
 interface CoordenatesTableProps {
@@ -75,6 +74,7 @@ export function CoordenatesTable({
         count={count}
         page={page}
         rowsPerPage={rowsPerPage}
+        labelRowsPerPage="Ciudades por páginas"
         onPageChange={onPageChange}
         onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={[5, 10, 25]}

@@ -1,5 +1,5 @@
 import api from "@/config/apiRequest";
-import { Data, EditUser, NewUser, User } from '../interface/userInterface';
+import { Data, NewUser ,User } from "@/interface/userInterface";
 
 // Obtener todos los usuarios
 export const GetAllUsers = async (
@@ -60,9 +60,6 @@ export const editUser = async (user: NewUser): Promise<void> => {
         },
       ],
     };
-
-    console.log("Edit User Request Data:", requestData);
-
     await api.put(`/api/users/update`, requestData);
   } catch (error) {
     console.error("Error al actualizar el usuario:", error);

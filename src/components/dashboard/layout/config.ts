@@ -1,5 +1,5 @@
 import { paths } from '@/config/paths';
-import type { NavItemConfig } from '@/types/nav';
+import type { NavItemConfig } from '@/interface/nav';
 
 export const navItems = [
   {

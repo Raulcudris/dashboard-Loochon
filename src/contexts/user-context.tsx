@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { authClient } from '@/lib/auth/client';
 import { logger } from '@/lib/default-logger';
-import type { User } from '@/types/user';
+import type { User } from '@/interface/user';
 
 export interface UserContextValue {
       user: User | null;

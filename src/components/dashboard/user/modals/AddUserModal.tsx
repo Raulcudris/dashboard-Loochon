@@ -7,9 +7,9 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import React, { useState } from 'react';
-import { createUser } from '../services/userService';
+import { createUser } from '../../../../services/userService';
 import { Grid } from '@mui/material';
-import { defaultNewUser, NewUser } from '../interface/userInterface';
+import { defaultNewUser, NewUser } from '@/interface/userInterface';
 
 const modalStyle = {
   position: 'absolute',
