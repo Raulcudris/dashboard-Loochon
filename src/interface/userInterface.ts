@@ -80,17 +80,17 @@ export interface NewUser {
   }
   
   // **Estructura de respuesta de datos de la API**
-  export interface Data {
+  export interface DataUsers {
     rspValue: string; // Valor de respuesta
     rspMessage: string; // Mensaje de respuesta
     rspParentKey: string; // Clave principal
     rspAppKey: string; // Clave de la aplicación
-    rspPagination: RspPagination; // Información de paginación
+    rspPagination: RspPaginationUsers; // Información de paginación
     rspData: User[]; // Lista de usuarios
   }
   
   // **Información de paginación dentro de la respuesta de la API**
-  export interface RspPagination {
+  export interface RspPaginationUsers {
     currentPage: number; // Página actual
     totalPageSize: number; // Tamaño total de la página
     totalResults: number; // Total de resultados

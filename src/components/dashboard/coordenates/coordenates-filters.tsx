@@ -4,13 +4,24 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import * as React from 'react';
 
-export function CoordenatesFilters(): React.JSX.Element {
+interface CoordenatesFiltersProps {
+  onFilterChange: (filter: string) => void;
+}
+
+export function CoordenatesFilters({ onFilterChange }: CoordenatesFiltersProps): React.JSX.Element {
+  
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const filter = event.target.value;
+    onFilterChange(filter);
+  };
+  
   return (
     <Card sx={{ p: 2 }}>
-      <OutlinedInput defaultValue=""
-                     fullWidth
-                     placeholder="Buscar ubicación"
-                    startAdornment={
+      <OutlinedInput 
+          onChange={handleInputChange}
+          fullWidth
+          placeholder="Buscar ciudad"
+          startAdornment={
           <InputAdornment position="start">
             <MagnifyingGlassIcon fontSize="var(--icon-fontSize-md)" />
           </InputAdornment>

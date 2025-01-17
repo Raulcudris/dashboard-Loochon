@@ -1,12 +1,12 @@
 import api from "@/config/apiRequest";
-import { Data, NewUser ,User } from "@/interface/userInterface";
+import { DataUsers, NewUser, User } from "@/interface";
 
-// Obtener todos los usuarios
+// Obtener todas los usuarios
 export const GetAllUsers = async (
   page: number = 1
 ): Promise<{ users: User[]; total: number }> => {
   try {
-    const response = await api.get<Data>(`/api/users/getall`, { params: { page } });
+    const response = await api.get<DataUsers>(`/api/users/getall`, { params: { page } });
     const { rspData, rspPagination } = response.data;
     return { users: rspData, total: rspPagination.totalResults };
   } catch (error) {
@@ -84,7 +84,7 @@ export const deleteUser = async (id: number): Promise<void> => {
 };
 
 // Cambiar estado de usuario
-export const changeUserStatus = async (id: number): Promise<Data> => {
+export const changeUserStatus = async (id: number): Promise<DataUsers> => {
   try {
     const data = [
       {
@@ -92,7 +92,7 @@ export const changeUserStatus = async (id: number): Promise<Data> => {
         recEstreg: 2, // Ejemplo de nuevo estado
       },
     ];
-    const response = await api.patch<Data>(`/api/users/changestatus`, data);
+    const response = await api.patch<DataUsers>(`/api/users/changestatus`, data);
     return response.data;
   } catch (error) {
     console.error('Error al cambiar el estado del usuario:', error);

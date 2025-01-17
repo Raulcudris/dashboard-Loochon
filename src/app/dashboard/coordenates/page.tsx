@@ -1,4 +1,5 @@
 'use client';
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -9,51 +10,58 @@ import { config } from '@/config/config';
 import { CoordenatesFilters } from '@/components/dashboard/coordenates/coordenates-filters';
 import { CoordenatesTable } from '@/components/dashboard/coordenates/coordenates-table';
 import { generateMetadata } from '@/utils/generateMetadata';
+import { GetAllCity } from '@/services';
+import { Coordenate } from '@/interface';
 
 export const metaData = generateMetadata('Coordenates');
 
 export default function Page(): React.JSX.Element {
-  const [rows, setRows] = useState<any[]>([]); // Ajusta el tipo según tu estructura de datos
-  const [count, setCount] = useState(0);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rows, setRows] = useState<Coordenate[]>([]); // Lista de coordenadas a mostrar en la tabla
+  const [count, setCount] = useState<number>(0); // Total de coordenadas (para paginación)
+  const [page, setPage] = useState<number>(0); // Página actual
+  const [rowsPerPage, setRowsPerPage] = useState<number>(5); // Filas por página
+  const [filter, setFilter] = useState<string>(''); // Filtro aplicado
 
   const fetchData = async () => {
-    // Simulación de datos; reemplázala con tu lógica de llamada al backend
-    const data = Array.from({ length: 50 }, (_, index) => ({
-      field1: `Value1-${index + 1}`,
-      field2: `Value2-${index + 1}`,
-      field3: `Value3-${index + 1}`,
-      field4: `Value4-${index + 1}`,
-      field5: `Value5-${index + 1}`,
-      field6: `Value6-${index + 1}`,
-      field7: `Value7-${index + 1}`,
-      field8: `Value8-${index + 1}`,
-      field9: `Value9-${index + 1}`,
-    }));
-    setRows(data.slice(page * rowsPerPage, (page + 1) * rowsPerPage));
-    setCount(data.length);
+    try {
+      const { coordenates, total } = await GetAllCity(page + 1, rowsPerPage, '170', filter);
+      setRows(coordenates); // Asignar los datos obtenidos
+      setCount(total); // Total de registros
+    } catch (error) {
+      console.error('Error al cargar ciudades:', error);
+    }
   };
 
+  // Llamada inicial y actualización de datos en cada cambio de página, filas por página o filtro
   useEffect(() => {
     fetchData();
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, filter]);
 
+  // Maneja los cambios de filtro
+  const handleFilterChange = (newFilter: string) => {
+    setFilter(newFilter);
+    setPage(0); // Reinicia la página al aplicar un filtro
+  };
+
+  // Cambia de página en la tabla
   const handlePageChange = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
+  // Cambia el número de filas por página
   const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setPage(0); // Reinicia la página al cambiar el tamaño de las filas
   };
 
+  // Forzar la recarga de datos
   const handleRefresh = () => {
     fetchData();
   };
 
   return (
     <Stack spacing={3}>
+      {/* Encabezado */}
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
           <Typography variant="h4">Coordenadas</Typography>
@@ -67,7 +75,11 @@ export default function Page(): React.JSX.Element {
           </Button>
         </div>
       </Stack>
-      <CoordenatesFilters />
+
+      {/* Filtros */}
+      <CoordenatesFilters onFilterChange={handleFilterChange} />
+
+      {/* Tabla de coordenadas */}
       <CoordenatesTable
         rows={rows}
         count={count}

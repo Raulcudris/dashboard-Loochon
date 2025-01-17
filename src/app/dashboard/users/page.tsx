@@ -1,8 +1,8 @@
 'use client';
 
-import type { User } from '@/components/dashboard/user/interface/userInterface';
+import type { User } from '@/interface/index';
 import { AddUserModal } from '@/components/dashboard/user/modals/AddUserModal';
-import { GetAllUsers } from '@/services/userService';
+import { GetAllUsers } from '@/services/index';
 import { UsersFilters } from '@/components/dashboard/user/users-filters';
 import { UsersTable } from '@/components/dashboard/user/users-table';
 import { generateMetadata } from '@/utils/generateMetadata';

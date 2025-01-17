@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Avatar,
   Box,
@@ -13,16 +13,7 @@ import {
   TablePagination,
   TableRow,
 } from '@mui/material';
-
-interface CoordenatesTableProps {
-  rows: any[];
-  count: number;
-  page: number;
-  rowsPerPage: number;
-  onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
-  onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onRefresh: () => void;
-}
+import { CoordenatesTableProps } from '@/interface';
 
 export function CoordenatesTable({
   rows,
@@ -31,7 +22,9 @@ export function CoordenatesTable({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
-}: CoordenatesTableProps): React.JSX.Element {
+  onRefresh,
+}: CoordenatesTableProps & { onRefresh: () => void }): React.JSX.Element {
+
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
@@ -39,30 +32,30 @@ export function CoordenatesTable({
           <TableHead>
             <TableRow>
               <TableCell padding="checkbox" align="center"></TableCell>
-              <TableCell align="center">Field1</TableCell>
-              <TableCell align="center">Field2</TableCell>
-              <TableCell align="center">Field3</TableCell>
-              <TableCell align="center">Field4</TableCell>
-              <TableCell align="center">Field5</TableCell>
-              <TableCell align="center">Field6</TableCell>
-              <TableCell align="center">Field7</TableCell>
-              <TableCell align="center">Field8</TableCell>
-              <TableCell align="center">Field9</TableCell>
+              <TableCell align="center">sisCodproSipr</TableCell>
+              <TableCell align="center">sisCodmunSimu</TableCell>
+              <TableCell align="center">sisIdedptSidp</TableCell>
+              <TableCell align="center">sisCodpaiSipa</TableCell>
+              <TableCell align="center">sisNombreSipr</TableCell>
+              <TableCell align="center">sisCodposSipr</TableCell>
+              <TableCell align="center">sisProclaSipr</TableCell>
+              <TableCell align="center">sisGeolatSipr</TableCell>
+              <TableCell align="center">sisGeolonSipr</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row, index) => (
               <TableRow key={index} hover>
                 <TableCell padding="checkbox"></TableCell>
-                <TableCell align="center">{row.field1}</TableCell>
-                <TableCell align="center">{row.field2}</TableCell>
-                <TableCell align="center">{row.field3}</TableCell>
-                <TableCell align="center">{row.field4}</TableCell>
-                <TableCell align="center">{row.field5}</TableCell>
-                <TableCell align="center">{row.field6}</TableCell>
-                <TableCell align="center">{row.field7}</TableCell>
-                <TableCell align="center">{row.field8}</TableCell>
-                <TableCell align="center">{row.field9}</TableCell>
+                <TableCell align="center">{row.sisCodproSipr}</TableCell>
+                <TableCell align="center">{row.sisCodmunSimu}</TableCell>
+                <TableCell align="center">{row.sisIdedptSidp}</TableCell>
+                <TableCell align="center">{row.sisCodpaiSipa}</TableCell>
+                <TableCell align="center">{row.sisNombreSipr}</TableCell>
+                <TableCell align="center">{row.sisCodposSipr}</TableCell>
+                <TableCell align="center">{row.sisProclaSipr}</TableCell>
+                <TableCell align="center">{row.sisGeolatSipr}</TableCell>
+                <TableCell align="center">{row.sisGeolonSipr}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -74,8 +67,8 @@ export function CoordenatesTable({
         count={count}
         page={page}
         rowsPerPage={rowsPerPage}
-        labelRowsPerPage="Ciudades por páginas"
         onPageChange={onPageChange}
+        labelRowsPerPage="Usuarios por páginas"
         onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={[5, 10, 25]}
       />

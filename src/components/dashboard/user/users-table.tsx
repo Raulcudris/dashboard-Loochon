@@ -17,7 +17,7 @@ import {
 import dayjs from 'dayjs';
 import { EditUserModal } from './modals/EditUserModal';
 import { DeleteUserModal } from './modals/DeleteUserModal';
-import { EditUser, UsersTableProps } from '@/interface/userInterface';
+import { EditUser, UsersTableProps } from '@/interface/index';
 
 export function UsersTable({
   rows,
