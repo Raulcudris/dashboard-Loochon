@@ -1,12 +1,9 @@
 'use client';
-
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import React, { useEffect, useState } from 'react';
-import { config } from '@/config/config';
 import { CoordenatesFilters } from '@/components/dashboard/coordenates/coordenates-filters';
 import { CoordenatesTable } from '@/components/dashboard/coordenates/coordenates-table';
 import { generateMetadata } from '@/utils/generateMetadata';
@@ -64,7 +61,7 @@ export default function Page(): React.JSX.Element {
       {/* Encabezado */}
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">Coordenadas</Typography>
+          <Typography variant="h4">Ciudades y municipios</Typography>
         </Stack>
         <div>
           <Button

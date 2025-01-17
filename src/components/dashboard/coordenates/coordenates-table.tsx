@@ -4,8 +4,10 @@ import React, { useEffect, useState } from 'react';
 import {
   Avatar,
   Box,
+  Button,
   Card,
   Divider,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -41,6 +43,11 @@ export function CoordenatesTable({
               <TableCell align="center">sisProclaSipr</TableCell>
               <TableCell align="center">sisGeolatSipr</TableCell>
               <TableCell align="center">sisGeolonSipr</TableCell>
+              <TableCell align="center">sisCoddptSidp</TableCell>
+              <TableCell align="center">sisNombreSidp</TableCell>
+              <TableCell align="center">sisIdemunSimu</TableCell>
+              <TableCell align="center">sisNombreSimu</TableCell>
+                 <TableCell align="center">Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -56,6 +63,28 @@ export function CoordenatesTable({
                 <TableCell align="center">{row.sisProclaSipr}</TableCell>
                 <TableCell align="center">{row.sisGeolatSipr}</TableCell>
                 <TableCell align="center">{row.sisGeolonSipr}</TableCell>
+                <TableCell align="center">{row.state?.sisCoddptSidp}</TableCell>
+                <TableCell align="center">{row.state?.sisNombreSidp}</TableCell>
+                <TableCell align="center">{row.city?.sisIdemunSimu}</TableCell>
+                <TableCell align="center">{row.city?.sisNombreSimu}</TableCell>
+                <TableCell>
+                  <Stack direction="row" spacing={1} justifyContent="center">
+                    <Button
+                      variant="outlined"
+                      //onClick={() => handleOpenEditModal(row)}
+                    >
+                      Modificar
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      //onClick={() => handleOpenDeleteModal(row)}
+                      //disabled={estadoMap[row.recEstregReus]?.label === 'Eliminada'}
+                    >
+                      Eliminar
+                    </Button>
+                  </Stack>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -68,7 +97,7 @@ export function CoordenatesTable({
         page={page}
         rowsPerPage={rowsPerPage}
         onPageChange={onPageChange}
-        labelRowsPerPage="Usuarios por páginas"
+        labelRowsPerPage="Ciudades y municipios por páginas"
         onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={[5, 10, 25]}
       />

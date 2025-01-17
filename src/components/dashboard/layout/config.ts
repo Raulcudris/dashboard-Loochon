@@ -16,7 +16,7 @@ export const navItems = [
   } ,
   {
     key: 'coordenates',
-    title: 'Coordenadas',
+    title: 'Ciudades y municipios',
     href: paths.dashboard.coordenates,
     icon: 'gear-six'
  },
