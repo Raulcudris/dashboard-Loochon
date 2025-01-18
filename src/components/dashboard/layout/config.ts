@@ -13,11 +13,17 @@ export const navItems = [
     title: 'Usuarios',
     href: paths.dashboard.users,
     icon: 'users'
-  } ,
+  },
   {
     key: 'coordenates',
     title: 'Ciudades y municipios',
     href: paths.dashboard.coordenates,
+    icon: 'gear-six'
+ } ,
+  {
+    key: 'occupations',
+    title: 'Servicios y ocupaciones',
+    href: paths.dashboard.occupations,
     icon: 'gear-six'
  },
  {

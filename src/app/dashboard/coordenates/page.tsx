@@ -7,10 +7,10 @@ import React, { useEffect, useState } from 'react';
 import { CoordenatesFilters } from '@/components/dashboard/coordenates/coordenates-filters';
 import { CoordenatesTable } from '@/components/dashboard/coordenates/coordenates-table';
 import { generateMetadata } from '@/utils/generateMetadata';
-import { GetAllCity } from '@/services';
-import { Coordenate } from '@/interface';
+import { GetAllCity } from '@/services/index';
+import { Coordenate } from '@/interface/index';
 
-export const metaData = generateMetadata('Coordenates');
+export const metaData = generateMetadata('coordenates');
 
 export default function Page(): React.JSX.Element {
   const [rows, setRows] = useState<Coordenate[]>([]); // Lista de coordenadas a mostrar en la tabla
@@ -19,6 +19,7 @@ export default function Page(): React.JSX.Element {
   const [rowsPerPage, setRowsPerPage] = useState<number>(5); // Filas por página
   const [filter, setFilter] = useState<string>(''); // Filtro aplicado
 
+    // Carga y filtra la lista de servicios
   const fetchData = async () => {
     try {
       const { coordenates, total } = await GetAllCity(page + 1, rowsPerPage, '170', filter);
@@ -29,7 +30,7 @@ export default function Page(): React.JSX.Element {
     }
   };
 
-  // Llamada inicial y actualización de datos en cada cambio de página, filas por página o filtro
+  // Actualiza los datos al cambiar filtros, página o filas por página
   useEffect(() => {
     fetchData();
   }, [page, rowsPerPage, filter]);
@@ -40,15 +41,15 @@ export default function Page(): React.JSX.Element {
     setPage(0); // Reinicia la página al aplicar un filtro
   };
 
-  // Cambia de página en la tabla
+  // Maneja el cambio de página
   const handlePageChange = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  // Cambia el número de filas por página
+  // Maneja el cambio en el tamaño de las filas por página
   const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reinicia la página al cambiar el tamaño de las filas
+    setPage(0); // Reinicia la página al cambiar el tamaño
   };
 
   // Forzar la recarga de datos
@@ -72,10 +73,8 @@ export default function Page(): React.JSX.Element {
           </Button>
         </div>
       </Stack>
-
       {/* Filtros */}
-      <CoordenatesFilters onFilterChange={handleFilterChange} />
-
+      <CoordenatesFilters onFilterChange={handleFilterChange}  />     
       {/* Tabla de coordenadas */}
       <CoordenatesTable
         rows={rows}

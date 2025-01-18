@@ -1,15 +1,15 @@
 import api from "@/config/apiRequest";
-import { DataCoordenates, Coordenate } from "@/interface";
+import {  DataOccupations, Occupations } from "@/interface";
 
 // Obtener todas las ciudades con parámetros personalizados
-export const GetAllCity = async (
+export const GetAllOccupations = async (
   currentPage: number = 1,
   pageSize: number = 10,
-  parameter: string = "170",
+  parameter: string = "ALL",
   filter: string = ""
-): Promise<{ coordenates: Coordenate[]; total: number }> => {
+): Promise<{ occupations: Occupations[]; total: number }> => {
   try {
-    const response = await api.get<DataCoordenates>(`/api/utility/city/pages?`, {
+    const response = await api.get<DataOccupations>(`/api/utility/services`, {
       params: {
         currentpage: currentPage,
         pagesize: pageSize,
@@ -18,10 +18,10 @@ export const GetAllCity = async (
       },
     });
     const { rspData, rspPagination } = response.data;
-    return { coordenates: rspData, total: rspPagination.totalResults };
+    return { occupations: rspData, total: rspPagination.totalResults };
   } catch (error) {
-    console.error("Error al obtener todas las ciudades:", error);
-    return { coordenates: [], total: 0 };
+    console.error("Error al obtener todas las ocupaciones:", error);
+    return { occupations: [], total: 0 };
   }
 };
 

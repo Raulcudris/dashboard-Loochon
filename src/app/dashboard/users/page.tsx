@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import React, { useEffect, useState } from 'react';
 
-export const metaData = generateMetadata('Users');
+export const metaData = generateMetadata('users');
 
 export default function Page(): React.JSX.Element {
   const [users, setUsers] = useState<User[]>([]);
