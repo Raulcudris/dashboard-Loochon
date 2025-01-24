@@ -1,21 +1,13 @@
 import api from "@/config/apiRequest";
-import {  DataOccupations, Occupations } from "@/interface";
+import { DataOccupations, NewOccupations } from "@/interface";
 
-// Obtener todas las ciudades con parámetros personalizados
+// Obtener todas las ocupaciones con paginación
 export const GetAllOccupations = async (
-  currentPage: number = 1,
-  pageSize: number = 10,
-  parameter: string = "ALL",
-  filter: string = ""
-): Promise<{ occupations: Occupations[]; total: number }> => {
+  page: number = 1
+): Promise<{ occupations: NewOccupations[]; total: number }> => {
   try {
-    const response = await api.get<DataOccupations>(`/api/utility/services`, {
-      params: {
-        currentpage: currentPage,
-        pagesize: pageSize,
-        parameter,
-        filter,
-      },
+    const response = await api.get<DataOccupations>(`/api/utility/services/getAllServices`, {
+      params: { page },
     });
     const { rspData, rspPagination } = response.data;
     return { occupations: rspData, total: rspPagination.totalResults };
@@ -25,89 +17,73 @@ export const GetAllOccupations = async (
   }
 };
 
-/* // Crear usuario
-export const createUser = async (newUser: NewUser): Promise<void> => {
+// Crear una nueva ocupación
+export const createOccupation = async (newOccupation: NewOccupations): Promise<void> => {
   try {
-    const completeUser = {
-      ...newUser,
-      recNroregReus: "NA",
-      recNiknamReus: newUser.recNombreReus || "default",
-      recNomusuReus: `${newUser.recNombreReus} ${newUser.recApelidReus}`,
-      recImgvisReus: "pr10157781214290956_800x500.png*9ae46c3d-a4d4-49b1-ae8f-20ebd27bcaf6",
-      sisCodpaiSipa: "170",
-      sisIdedptSidp: "205020",
-      sisCodproSipr: "205020001000",
-      recCodposReus: "205020001000",
-      recGeolatReus: 0.0,
-      recGeolonReus: 0.0,
-    };
-    console.log({ completeUser })
     const requestData = {
       rspValue: "",
       rspMessage: "",
       rspParentKey: "",
       rspAppKey: "",
-      rspData: [completeUser],
+      rspData: [newOccupation],
     };
 
-    console.log("Request Data:", requestData); // Depuración
-
-    const response = await api.post(`/api/users/create`, requestData);
-    console.log("Response Data:", response.data); // Depuración de la respuesta
+    console.log("Request Data (createOccupation):", requestData);
+    const response = await api.post(`/api/utility/services/create`, requestData);
+    console.log("Response Data (createOccupation):", response.data);
   } catch (error) {
+    console.error("Error al crear una ocupación:", error);
     throw error;
   }
 };
 
-// Actualizar un usuario existente
-export const editUser = async (user: NewUser): Promise<void> => {
+// Actualizar una ocupación existente
+export const editOccupation = async (occupation: NewOccupations): Promise<void> => {
   try {
     const requestData = {
-      rspData: [
-        {
-          ...user,
-          recNomusuReus: `${user.recNombreReus || ""} ${user.recApelidReus || ""}`.trim(),
-        },
-      ],
+      rspData: [occupation],
     };
-    await api.put(`/api/users/update`, requestData);
+
+    console.log("Request Data (editOccupation):", requestData);
+    const response = await api.put(`/api/utility/services/update`, requestData);
+    console.log("Response Data (editOccupation):", response.data);
   } catch (error) {
-    console.error("Error al actualizar el usuario:", error);
+    console.error("Error al actualizar la ocupación:", error);
     throw error;
   }
 };
 
-// Eliminar usuario
-export const deleteUser = async (id: number): Promise<void> => {
+// Eliminar una ocupación
+export const deleteOccupation = async (id: string): Promise<void> => {
   try {
     const data = [{ recPKey: id }];
-    await api.patch(`/api/users/delete`, {
+    await api.patch(`/api/utility/services/delete`, {
       data,
       headers: {
         "Content-Type": "application/json",
       },
     });
+    console.log("Ocupación eliminada exitosamente:", id);
   } catch (error) {
-    console.error('Error al eliminar el usuario:', error);
+    console.error("Error al eliminar la ocupación:", error);
     throw error;
   }
 };
 
-// Cambiar estado de usuario
-export const changeUserStatus = async (id: number): Promise<DataUsers> => {
+// Cambiar el estado de una ocupación
+export const changeOccupationStatus = async (id: number): Promise<DataOccupations> => {
   try {
     const data = [
       {
         recPKey: id,
-        recEstreg: 2, // Ejemplo de nuevo estado
+        recEstreg: 2, // Cambiar al estado deseado (ejemplo: 2 para "desactivado")
       },
     ];
-    const response = await api.patch<DataUsers>(`/api/users/changestatus`, data);
+    const response = await api.patch<DataOccupations>(`/api/utility/services/changestatus`, data);
+    console.log("Response Data (changeOccupationStatus):", response.data);
     return response.data;
   } catch (error) {
-    console.error('Error al cambiar el estado del usuario:', error);
+    console.error("Error al cambiar el estado de la ocupación:", error);
     throw error;
   }
 };
-
- */
