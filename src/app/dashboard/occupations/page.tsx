@@ -36,13 +36,17 @@ export default function Page(): React.JSX.Element {
 
       // Aplicar filtro y paginación
       const filteredOccupations = fetchedOccupations.filter((occupation) => {
-        const title = occupation.recTitleworkRcws?.toLowerCase() || '';
+        const title = occupation.recTitleworkRcws?.toLowerCase() ||'';
+        const clave = occupation.recIdentifikeyRcws?.toLowerCase() ||'';
         const description = occupation.recDescrworkRcws?.toLowerCase() || '';
         const location = occupation.recKeylocationRcws?.toLowerCase() || '';
+        const categoria	 = occupation.recIdentifikeyRcwk?.toLowerCase() || '';
         return (
           title.includes(filter.toLowerCase()) ||
           description.includes(filter.toLowerCase()) ||
-          location.includes(filter.toLowerCase())
+          location.includes(filter.toLowerCase())||
+          clave.includes(filter.toLowerCase()) ||
+          categoria.includes(filter.toLowerCase())
         );
       });
 

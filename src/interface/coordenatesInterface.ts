@@ -57,7 +57,7 @@ export interface State {
 }
 
 // **Información de una ciudad (municipio)**
-export interface City {
+ interface City {
   sisCodmunSimu: string; // Código del municipio
   sisIdemunSimu: string; // ID del municipio
   sisNombreSimu: string; // Nombre del municipio

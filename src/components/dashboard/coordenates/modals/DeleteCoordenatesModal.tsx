@@ -1,12 +1,14 @@
 'use client';
 
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import React from 'react';
-import { changeCityStatus } from '@/services/coordenatesService';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import { changeCityStatus } from '@/services';
 
 const modalStyle = {
   position: 'absolute',
@@ -35,48 +37,76 @@ export const DeleteCoordenatesModal: React.FC<DeleteCoordenatesModalProps> = ({
   coordenateName,
   onDeleteSuccess,
 }) => {
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+
   const handleDelete = async () => {
     if (!coordenateId) {
-      alert('ID de coordenada no válido.'); // Manejo de errores
+      setSnackbarMessage('ID de coordenada no válido.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
       return;
     }
+
     try {
       await changeCityStatus(coordenateId); // Llamar al servicio
-      alert('Coordenada eliminada exitosamente.');
+      setSnackbarMessage('Coordenada eliminada exitosamente.');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
       onDeleteSuccess(); // Notificar al padre que se eliminó
-      onClose(); // Cerrar el modal
+        // Cerrar el modal después de mostrar el Snackbar
+      setTimeout(onClose, 1000); // Espera 500 ms para que se muestre la alerta
     } catch (error) {
       console.error('Error al eliminar la coordenada:', error);
-      alert('Error al eliminar la coordenada. Por favor, inténtelo de nuevo.');
+      setSnackbarMessage('Error al eliminar la coordenada. Por favor, inténtelo de nuevo.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     }
   };
 
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
   return (
-    <Modal open={open} onClose={onClose} aria-labelledby="delete-coordenate-modal">
-      <Box
-        sx={{
-          ...modalStyle,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
+    <>
+      <Modal open={open} onClose={onClose} aria-labelledby="delete-coordenate-modal">
+        <Box
+          sx={{
+            ...modalStyle,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Typography variant="h6" component="h2" sx={{ mb: 2, textAlign: 'center' }}>
+            ¿Estás seguro de eliminar la coordenada?
+          </Typography>
+          <Typography sx={{ mb: 2, textAlign: 'center' }}>
+            {coordenateName || 'Nombre no disponible'}
+          </Typography>
+          <Stack direction="row" spacing={2} sx={{ mt: 2, justifyContent: 'center' }}>
+            <Button variant="contained" color="error" onClick={handleDelete}>
+              Eliminar
+            </Button>
+            <Button variant="outlined" onClick={onClose}>
+              Cancelar
+            </Button>
+          </Stack>
+        </Box>
+      </Modal>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Typography variant="h6" component="h2" sx={{ mb: 2, textAlign: 'center' }}>
-          ¿Estás seguro de eliminar la coordenada?
-        </Typography>
-        <Typography sx={{ mb: 2, textAlign: 'center' }}>
-          {coordenateName || 'Nombre no disponible'}
-        </Typography>
-        <Stack direction="row" spacing={2} sx={{ mt: 2, justifyContent: 'center' }}>
-          <Button variant="contained" color="error" onClick={handleDelete}>
-            Eliminar
-          </Button>
-          <Button variant="outlined" onClick={onClose}>
-            Cancelar
-          </Button>
-        </Stack>
-      </Box>
-    </Modal>
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };

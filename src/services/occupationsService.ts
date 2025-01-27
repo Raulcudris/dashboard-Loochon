@@ -41,17 +41,24 @@ export const createOccupation = async (newOccupation: NewOccupations): Promise<v
 export const editOccupation = async (occupation: NewOccupations): Promise<void> => {
   try {
     const requestData = {
-      rspData: [occupation],
+      rspData: [occupation], // Verifica si esta estructura es la que espera el backend
     };
 
-    console.log("Request Data (editOccupation):", requestData);
     const response = await api.put(`/api/utility/services/update`, requestData);
-    console.log("Response Data (editOccupation):", response.data);
-  } catch (error) {
+
+  } catch (error: any) {
     console.error("Error al actualizar la ocupación:", error);
+
+    // Captura el mensaje de error del backend
+    if (error.response) {
+      console.error("Response Error Data:", error.response.data);
+      throw new Error(error.response.data.message || "Error al actualizar la ocupación.");
+    }
+
     throw error;
   }
 };
+
 
 // Eliminar una ocupación
 export const deleteOccupation = async (id: string): Promise<void> => {

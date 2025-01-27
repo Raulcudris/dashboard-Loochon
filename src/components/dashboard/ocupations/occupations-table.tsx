@@ -102,6 +102,10 @@ export function OccupationsTable({
                         variant="outlined"
                         color="error"
                         onClick={() => handleDeleteClick(row)} // Llama a la función de eliminación
+                        disabled={
+                          estadoMap[row.recStatusregiRcws]?.label === 'Inactivo' || 
+                          estadoMap[row.recStatusregiRcws]?.label === 'Eliminada'
+                        }
                       >
                         Eliminar
                       </Button>
@@ -137,7 +141,7 @@ export function OccupationsTable({
           open={openEditModal}
           onClose={handleCloseModals}
           occupation={selectedOccupation}
-          onOccupationUpdated={onRefresh}
+          onSave={onRefresh}
         />
       )}
 
