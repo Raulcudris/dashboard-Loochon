@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Button,
@@ -11,10 +11,10 @@ import {
   Typography,
   Snackbar,
   Alert,
+  IconButton,
 } from '@mui/material';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
-
 import { EditCoordenate, defaultNewCoordenate, NewCoordenate } from '@/interface';
 import { editCity } from '@/services';
 
@@ -38,12 +38,25 @@ const mapContainerStyle = {
   width: '100%',
 };
 
-// Ícono personalizado para el marcador
+const largeMapModalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '90%',
+  height: '90%',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+  borderRadius: 2,
+};
+
 const customMarkerIcon = new L.Icon({
-  iconUrl: '/assets/marker-icon.png', // Ruta relativa desde la carpeta public
-  iconSize: [25, 41], // Tamaño del ícono
-  iconAnchor: [12, 41], // Punto de anclaje del ícono
+  iconUrl: '/assets/marker-icon.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
 });
+
 
 interface EditCoordenatesModalProps {
   open: boolean;
@@ -59,10 +72,13 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
   onSave,
 }) => {
   const [updatedCoordenate, setUpdatedCoordenate] = useState<EditCoordenate>(defaultNewCoordenate);
+  const [temporaryCoordenate, setTemporaryCoordenate] = useState<EditCoordenate>(defaultNewCoordenate);
+  const [smallMapCoords, setSmallMapCoords] = useState<[number, number]>([0, 0]); // Coordenadas del mapa pequeño
   const [isModified, setIsModified] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+  const [largeMapOpen, setLargeMapOpen] = useState(false);
 
   useEffect(() => {
     if (coordenate) {
@@ -107,28 +123,59 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
     setSnackbarOpen(false);
   };
 
-  const MapEvents = () => {
-    useMapEvents({
-      click: (e) => {
-        const { lat, lng } = e.latlng;
-        setUpdatedCoordenate((prev) => ({
-          ...prev,
-          sisGeolatSipr: lat,
-          sisGeolonSipr: lng,
-        }));
-      },
-    });
+  const SmallMapController = ({ coords }: { coords: [number, number] }) => {
+    const map = useMap();
+
+    useEffect(() => {
+      if (map) {
+        map.setView(coords, map.getZoom(), { animate: true });
+      }
+    }, [coords, map]);
+
     return null;
+  };
+
+  const openLargeMap = () => {
+    setTemporaryCoordenate({ ...updatedCoordenate }); // Guarda un estado temporal
+    setLargeMapOpen(true);
+  };
+
+  const cancelLargeMapChanges = () => {
+    setLargeMapOpen(false); // Solo cerramos el modal sin actualizar nada
+  };
+
+  const saveLargeMapChanges = () => {
+    const newCoords: [number, number] = [
+      temporaryCoordenate?.sisGeolatSipr || 0,
+      temporaryCoordenate?.sisGeolonSipr || 0,
+    ];
+  
+    // Solo actualizamos las coordenadas si se presiona "Guardar"
+    setUpdatedCoordenate({ ...temporaryCoordenate });
+    setSmallMapCoords(newCoords);
+    setLargeMapOpen(false);
   };
 
   return (
     <>
       <Modal open={open} onClose={onClose} aria-labelledby="edit-coordenate-modal">
         <Box sx={modalStyle}>
-         <Typography variant="h6" align="center" component="h2" sx={{ mb: 2 }}>
-           Actualizar Información de Coordenadas
+          {/* Botón de cierre */}
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}>
+            &times;
+          </IconButton>
+          <Typography variant="h6" align="center" component="h2" sx={{ mb: 2 }}>
+            Actualizar Información de Coordenadas
           </Typography>
-          <br/>
+          <br />
           <Grid container spacing={2}>
             {/* Columna 1: primera mitad del formulario */}
             <Grid item xs={4}>
@@ -157,14 +204,14 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
                 label="Nombre del Departamento"
                 value={updatedCoordenate.state?.sisNombreSidp || ''}
                 fullWidth
-                InputProps={{ readOnly : true}}
+                InputProps={{ readOnly: true }}
                 sx={{ mb: 2 }}
               />
               <TextField
                 label="Nombre del Municipio"
                 value={updatedCoordenate.city?.sisNombreSimu || ''}
                 fullWidth
-                InputProps={{ readOnly : true}}
+                InputProps={{ readOnly: true }}
                 sx={{ mb: 2 }}
               />
             </Grid>
@@ -214,32 +261,28 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
                 <MapContainer
                   center={[updatedCoordenate?.sisGeolatSipr || 0, updatedCoordenate?.sisGeolonSipr || 0]}
                   zoom={12}
-                  style={{ height: '90%', width: '100%' }}
+                  style={{ height: '85%', width: '100%' }}
                 >
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   <Marker
-                    position={[
-                      updatedCoordenate?.sisGeolatSipr || 0,
-                      updatedCoordenate?.sisGeolonSipr || 0,
-                    ]}
+                    position={[updatedCoordenate?.sisGeolatSipr || 0, updatedCoordenate?.sisGeolonSipr || 0]}
                     icon={customMarkerIcon}
-                    draggable
-                    eventHandlers={{
-                      dragend: (e) => {
-                        const marker = e.target;
-                        const position = marker.getLatLng();
-                        handleInputChange('sisGeolatSipr', position.lat);
-                        handleInputChange('sisGeolonSipr', position.lng);
-                      },
-                    }}
                   />
-                  <MapEvents />
+
+                  {/* Este componente asegurará que el mapa pequeño se mueva cuando cambien las coordenadas */}
+                  <SmallMapController coords={[updatedCoordenate?.sisGeolatSipr || 0, updatedCoordenate?.sisGeolonSipr || 0]} />
                 </MapContainer>
+
+                <Stack direction="row" spacing={1} sx={{ mt: 1, justifyContent: 'center' }}>
+                  <Button variant="contained" onClick={openLargeMap}>
+                    Ampliar vista
+                  </Button>
+                </Stack>
               </Box>
             </Grid>
           </Grid>
           <Stack direction="row" spacing={2} sx={{ mt: 2, justifyContent: 'center' }}>
-            <Button variant="contained" color="primary" onClick={handleSave}  disabled={!isModified} >
+            <Button variant="contained" color="primary" onClick={handleSave} disabled={!isModified} >
               Guardar
             </Button>
             <Button variant="outlined" color="secondary" onClick={onClose}>
@@ -248,6 +291,54 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
           </Stack>
         </Box>
       </Modal>
+
+
+      {/* Modal del mapa grande */}
+      <Modal open={largeMapOpen} onClose={() => setLargeMapOpen(false)}>
+        <Box sx={largeMapModalStyle}>
+
+          <MapContainer
+            center={[
+              temporaryCoordenate?.sisGeolatSipr || 0,
+              temporaryCoordenate?.sisGeolonSipr || 0,
+            ]}
+            zoom={12}
+            style={{ height: '95%', width: '100%' }}
+          >
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <Marker
+              position={[
+                temporaryCoordenate?.sisGeolatSipr || 0,
+                temporaryCoordenate?.sisGeolonSipr || 0,
+              ]}
+              icon={customMarkerIcon}
+              draggable
+              eventHandlers={{
+                dragend: (e) => {
+                  const marker = e.target;
+                  const position = marker.getLatLng();
+
+                  // Actualiza las coordenadas en tiempo real
+                  setTemporaryCoordenate((prev) => ({
+                    ...prev,
+                    sisGeolatSipr: position.lat,
+                    sisGeolonSipr: position.lng,
+                  }));
+                },
+              }}
+            />
+          </MapContainer>
+          <Stack direction="row" spacing={2} sx={{ mt: 1, justifyContent: 'flex-end' }}>
+            <Button variant="contained" color="primary" onClick={saveLargeMapChanges}>
+              Guardar Ubicación
+            </Button>
+            <Button variant="outlined" color="secondary" onClick={cancelLargeMapChanges}>
+              Cancelar
+            </Button>
+          </Stack>
+        </Box>
+      </Modal>
+
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
