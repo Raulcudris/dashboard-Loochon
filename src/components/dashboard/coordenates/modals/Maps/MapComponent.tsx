@@ -1,54 +1,68 @@
-import React from 'react';
-import { Box } from '@mui/material';
-import { MapContainer, TileLayer, Marker } from 'react-leaflet';
-import L from 'leaflet';
+'use client';
 
-// CSS de Leaflet
-import 'leaflet/dist/leaflet.css';
+import React, { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import dynamic from 'next/dynamic';
 
-// Ícono personalizado para el marcador
-const customMarkerIcon = new L.Icon({
-  iconUrl: '/assets/marker-icon.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
+// Asegurar que `leaflet` se importe solo en el cliente
+const L = typeof window !== 'undefined' ? require('leaflet') : null;
 
 interface MapComponentProps {
-  center: [number, number]; // Coordenadas iniciales
-  zoom?: number; // Nivel de zoom
-  isDraggable?: boolean; // Permite arrastrar el marcador
-  style?: React.CSSProperties; // Estilos personalizados
-  onMarkerDrag?: (lat: number, lng: number) => void; // Callback para manejar eventos de arrastre
+  coordinates: [number, number];
+  setCoordinates: (coords: [number, number]) => void;
+  isDraggable?: boolean;
+  isFullScreen?: boolean;
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({
-  center,
-  zoom = 12,
-  isDraggable = false,
-  style = { height: '85%', width: '100%' },
-  onMarkerDrag,
-}) => {
+const MapController = ({ coords }: { coords: [number, number] }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    map.setView(coords, map.getZoom(), { animate: true });
+  }, [coords, map]);
+
+  return null;
+};
+
+const MapComponent: React.FC<MapComponentProps> = ({ coordinates, setCoordinates, isDraggable = false, isFullScreen = false }) => {
+  const [markerIcon, setMarkerIcon] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setMarkerIcon(
+        new L.Icon({
+          iconUrl: '/assets/marker-icon.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+        })
+      );
+    }
+  }, []);
+
+  if (!markerIcon) return null; // Evita errores si Leaflet aún no se ha cargado
+
   return (
-    <Box sx={{ height: '100%', width: '100%' }}>
-      <MapContainer center={center} zoom={zoom} style={style}>
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <Marker
-          position={center}
-          icon={customMarkerIcon}
-          draggable={isDraggable}
-          eventHandlers={{
-            dragend: (e) => {
-              if (onMarkerDrag) {
-                const marker = e.target;
-                const position = marker.getLatLng();
-                onMarkerDrag(position.lat, position.lng);
-              }
-            },
-          }}
-        />
-      </MapContainer>
-    </Box>
+    <MapContainer
+      center={coordinates}
+      zoom={12}
+      style={{ height: isFullScreen ? '95%' : '85%', width: '100%' }}
+    >
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <MapController coords={coordinates} />
+      <Marker
+        position={coordinates}
+        icon={markerIcon}
+        draggable={isDraggable}
+        eventHandlers={{
+          dragend: (e) => {
+            const marker = e.target;
+            const position = marker.getLatLng();
+            setCoordinates([position.lat, position.lng]);
+          },
+        }}
+      />
+    </MapContainer>
   );
 };
 
-export default MapComponent;
+export default dynamic(() => Promise.resolve(MapComponent), { ssr: false });
