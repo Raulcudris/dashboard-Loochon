@@ -76,55 +76,63 @@ export function UsersTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.recIdeunikeyReus} hover>
-                <TableCell>
-                  <Stack direction="row" alignItems="center" spacing={2}>
-                    <Avatar src={row.recImgvisReus} />
-                    <Typography variant="subtitle2">
-                      {`${row.recNombreReus} ${row.recApelidReus}`}
+            {rows.length > 0 ? (
+              rows.map((row) => (
+                <TableRow key={row.recIdeunikeyReus} hover>
+                  <TableCell>
+                    <Stack direction="row" alignItems="center" spacing={2}>
+                      <Avatar src={row.recImgvisReus} />
+                      <Typography variant="subtitle2">
+                        {`${row.recNombreReus} ${row.recApelidReus}`}
+                      </Typography>
+                    </Stack>
+                  </TableCell>
+                  <TableCell align="center">{row.apjCorreoApgm}</TableCell>
+                  <TableCell align="center">{row.recDirresReus}</TableCell>
+                  <TableCell align="center">{row.city?.sisNombreSimu || 'N/A'}</TableCell>
+                  <TableCell align="center">{row.city?.sisNombreSidp || 'N/A'}</TableCell>
+                  <TableCell align="center">{row.recTelefoReus}</TableCell>
+                  <TableCell align="center">
+                    {dayjs(row.recFecnacReus).format('DD/MM/YYYY')}
+                  </TableCell>
+                  <TableCell align="center">
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: estadoMap[row.recEstregReus]?.color || 'gray',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {estadoMap[row.recEstregReus]?.label || 'Desconocido'}
                     </Typography>
-                  </Stack>
-                </TableCell>
-                <TableCell align="center">{row.apjCorreoApgm}</TableCell>
-                <TableCell align="center">{row.recDirresReus}</TableCell>
-                <TableCell align="center">{row.city?.sisNombreSimu || 'N/A'}</TableCell>
-                <TableCell align="center">{row.city?.sisNombreSidp || 'N/A'}</TableCell>
-                <TableCell align="center">{row.recTelefoReus}</TableCell>
-                <TableCell align="center">
-                  {dayjs(row.recFecnacReus).format('DD/MM/YYYY')}
-                </TableCell>
-                <TableCell align="center">
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: estadoMap[row.recEstregReus]?.color || 'gray',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    {estadoMap[row.recEstregReus]?.label || 'Desconocido'}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Stack direction="row" spacing={1} justifyContent="center">
-                    <Button
-                      variant="outlined"
-                      onClick={() => handleOpenEditModal(row)}
-                    >
-                      Modificar
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      onClick={() => handleOpenDeleteModal(row)}
-                      disabled={estadoMap[row.recEstregReus]?.label === 'Eliminada'}
-                    >
-                      Eliminar
-                    </Button>
-                  </Stack>
+                  </TableCell>
+                  <TableCell>
+                    <Stack direction="row" spacing={1} justifyContent="center">
+                      <Button
+                        variant="outlined"
+                        onClick={() => handleOpenEditModal(row)}
+                      >
+                        Modificar
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={() => handleOpenDeleteModal(row)}
+                        disabled={estadoMap[row.recEstregReus]?.label === 'Eliminada'}
+                      >
+                        Eliminar
+                      </Button>
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={15} align="center">
+                  <Typography variant="body2">No hay datos disponibles.</Typography>
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </Box>
