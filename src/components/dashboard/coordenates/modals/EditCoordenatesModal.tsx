@@ -72,7 +72,7 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
-  const [largeMapOpen, setLargeMapOpen] = useState(false);
+  const [largeMapOpen, setLargeMapOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (coordenate) {
@@ -273,6 +273,18 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
       {/* Modal del mapa grande */}
       <Modal open={largeMapOpen} onClose={() => setLargeMapOpen(false)}>
         <Box sx={largeMapModalStyle}>
+           {/* Botón de cierre */}
+           <IconButton
+            aria-label="close"
+            onClick={cancelLargeMapChanges}
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}>
+            &times;
+          </IconButton>
           <MapComponent
             coordinates={[temporaryCoordenate?.sisGeolatSipr || 0, temporaryCoordenate?.sisGeolonSipr || 0]}
             setCoordinates={(newCoords) => {
