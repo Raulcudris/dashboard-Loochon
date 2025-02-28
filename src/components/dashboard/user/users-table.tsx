@@ -1,3 +1,4 @@
+// components/dashboard/user/UsersTable.tsx
 import React from 'react';
 import {
   Avatar,

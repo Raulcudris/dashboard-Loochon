@@ -1,3 +1,4 @@
+// components/dashboard/user/UsersFilters.tsx
 import Card from '@mui/material/Card';
 import InputAdornment from '@mui/material/InputAdornment';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -9,13 +10,12 @@ interface UsersFiltersProps {
 }
 
 export function UsersFilters({ onFilterChange }: UsersFiltersProps): React.JSX.Element {
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const filter = event.target.value;
     onFilterChange(filter);
   };
 
-   return (
+  return (
     <Card sx={{ p: 2 }}>
       <OutlinedInput
         onChange={handleInputChange}
