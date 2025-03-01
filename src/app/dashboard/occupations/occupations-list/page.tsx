@@ -10,9 +10,9 @@ import { GetAllOccupations } from '@/services/index';
 import { Occupations } from '@/interface/index';
 import { OccupationsFilters } from '@/components/dashboard/ocupations/occupations-filters';
 import { OccupationsTable } from '@/components/dashboard/ocupations/occupations-table';
-import { AddOccupationsModal } from '@/components/dashboard/ocupations/modals/AddOcupationsModal';
-import { EditOccupationsModal } from '@/components/dashboard/ocupations/modals/EditOcupationsModal';
-import { DeleteOccupationsModal } from '@/components/dashboard/ocupations/modals/DeleteOcupationsModal';
+import { AddOccupationsModal } from '@/components/dashboard/ocupations/modals/AddOccupationsModal';
+import { EditOccupationsModal } from '@/components/dashboard/ocupations/modals/EditOccupationsModal';
+import { DeleteOccupationsModal } from '@/components/dashboard/ocupations/modals/DeleteOccupationsModal';
 
 export const metaData = generateMetadata('Occupations');
 

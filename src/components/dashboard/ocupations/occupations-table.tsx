@@ -14,8 +14,9 @@ import {
   Typography,
 } from '@mui/material';
 import { OccupationsTableProps } from '@/interface';
-import { EditOccupationsModal } from './modals/EditOcupationsModal';
-import { DeleteOccupationsModal } from './modals/DeleteOcupationsModal';
+import { EditOccupationsModal } from './modals/EditOccupationsModal';
+import { DeleteOccupationsModal } from './modals/DeleteOccupationsModal';
+import { useOccupations } from '@/hooks/use-occupations';
 
 export function OccupationsTable({
   rows,
@@ -25,37 +26,26 @@ export function OccupationsTable({
   onPageChange,
   onRowsPerPageChange,
   onRefresh,
-  onEdit, // Función para editar
-  onDelete, // Función para eliminar
+  onEdit,
+  onDelete,
 }: OccupationsTableProps & {
   onRefresh: () => void;
-  onEdit: (row: any) => void; // Función para manejar la edición
-  onDelete: (row: any) => void; // Función para manejar la eliminación
+  onEdit: (row: any) => void;
+  onDelete: (row: any) => void;
 }): React.JSX.Element {
-  const [openEditModal, setOpenEditModal] = React.useState(false);
-  const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
-  const [selectedOccupation, setSelectedOccupation] = React.useState<any>(null);
+  const {
+    openEditModal,
+    openDeleteModal,
+    selectedOccupation,
+    handleEditClick,
+    handleDeleteClick,
+    handleCloseModals,
+  } = useOccupations();
 
   const estadoMap: Record<string, { label: string; color: string }> = {
     1: { label: 'Activo', color: 'green' },
     2: { label: 'Inactivo', color: 'orange' },
     3: { label: 'Eliminada', color: 'red' },
-  };
-
-  const handleEditClick = (occupation: any) => {
-    setSelectedOccupation(occupation);
-    setOpenEditModal(true);
-  };
-
-  const handleDeleteClick = (occupation: any) => {
-    setSelectedOccupation(occupation);
-    setOpenDeleteModal(true);
-  };
-
-  const handleCloseModals = () => {
-    setOpenEditModal(false);
-    setOpenDeleteModal(false);
-    setSelectedOccupation(null);
   };
 
   return (
@@ -68,8 +58,8 @@ export function OccupationsTable({
               <TableCell align="center">Categoría</TableCell>
               <TableCell align="center">Título</TableCell>
               <TableCell align="center">Descripción</TableCell>
-              <TableCell align="center">Estado</TableCell>
               <TableCell align="center">Orden de visualización</TableCell>
+              <TableCell align="center">Estado</TableCell>
               <TableCell align="center">Acciones</TableCell>
             </TableRow>
           </TableHead>
@@ -83,27 +73,30 @@ export function OccupationsTable({
                   <TableCell align="center">{row.recDescrworkRcws}</TableCell>
                   <TableCell align="center">{row.recOrdviewkeyRcws}</TableCell>
                   <TableCell align="center">
-                      <Typography
-                        variant="body2"
-                        sx={{
-                        color: estadoMap[row.recStatusregiRcws]?.color || 'gray', fontWeight: 'bold',}}>
-                          {estadoMap[row.recStatusregiRcws]?.label || 'Desconocido'}
-                       </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: estadoMap[row.recStatusregiRcws]?.color || 'gray',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {estadoMap[row.recStatusregiRcws]?.label || 'Inactivo'}
+                    </Typography>
                   </TableCell>
                   <TableCell>
                     <Stack direction="row" spacing={1} justifyContent="center">
                       <Button
                         variant="outlined"
-                        onClick={() => handleEditClick(row)} // Llama a la función de edición
+                        onClick={() => handleEditClick(row)}
                       >
                         Modificar
                       </Button>
                       <Button
                         variant="outlined"
                         color="error"
-                        onClick={() => handleDeleteClick(row)} // Llama a la función de eliminación
+                        onClick={() => handleDeleteClick(row)}
                         disabled={
-                          estadoMap[row.recStatusregiRcws]?.label === 'Inactivo' || 
+                          estadoMap[row.recStatusregiRcws]?.label === 'Inactivo' ||
                           estadoMap[row.recStatusregiRcws]?.label === 'Eliminada'
                         }
                       >

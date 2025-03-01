@@ -34,7 +34,7 @@ export interface NewOccupations {
   }
   
   // **Estructura de respuesta para ocupaciones**
-  export interface OccupationsResponse {
+  export interface OcupationsResponse {
     rspValue: string; // Valor de respuesta (por ejemplo, "OK")
     rspMessage: string; // Mensaje de respuesta
     rspParentKey: string; // Clave principal de la respuesta

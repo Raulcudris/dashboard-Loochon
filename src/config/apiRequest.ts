@@ -6,7 +6,7 @@ const api = axios.create({
       'Content-Type': 'application/json',
       'Accept': 'application/json'
   },
-  timeout: 15000, // Aumenta el tiempo de espera a 15 segundos (15000 ms)
+  timeout: 30000, // Aumenta el timeout a 30 segundos (o más si es necesario)
 });
 
 export default api;

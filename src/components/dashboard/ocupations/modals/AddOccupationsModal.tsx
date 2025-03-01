@@ -1,49 +1,16 @@
-'use client';
-
+// components/dashboard/occupations/AddOccupationsModal.tsx
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Modal,
-  Stack,
-  TextField,
-  Typography,
-  Grid,
-  Snackbar,
-  Alert,
-} from '@mui/material';
+import { Button, Stack, TextField, Grid } from '@mui/material';
+import { BaseModal } from '@/components/dashboard/ocupations/modals/BaseModal';
 import { createOccupation } from '@/services';
 import { NewOccupations, defaultNewOccupations } from '@/interface';
 
-const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 600,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4,
-  borderRadius: 2,
-};
-
-const SNACKBAR_AUTOHIDE_DURATION = 6000;
-
-interface AddOccupationsModalProps {
+export const AddOccupationsModal: React.FC<{
   open: boolean;
   onClose: () => void;
   onOccupationAdded: () => void;
-}
-
-export const AddOccupationsModal: React.FC<AddOccupationsModalProps> = ({
-  open,
-  onClose,
-  onOccupationAdded,
-}) => {
+}> = ({ open, onClose, onOccupationAdded }) => {
   const [newOccupation, setNewOccupation] = useState<NewOccupations>(defaultNewOccupations);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
   const handleInputChange = (field: keyof NewOccupations, value: string | number) => {
     setNewOccupation((prev) => ({
@@ -52,41 +19,10 @@ export const AddOccupationsModal: React.FC<AddOccupationsModalProps> = ({
     }));
   };
 
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
-
-  const handleSave = async () => {
-    if (!newOccupation.recTitleworkRcws.trim()) {
-      setSnackbarMessage('Por favor, complete el campo de título.');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
-      return;
-    }
-
-    try {
-      await createOccupation(newOccupation);
-      setSnackbarMessage('Ocupación creada con éxito.');
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
-      onOccupationAdded(); // Refrescar la lista de ocupaciones
-      onClose(); // Cerrar el modal
-      setNewOccupation(defaultNewOccupations); // Limpiar formulario
-    } catch (error) {
-      console.error('Error al crear la ocupación:', error);
-      setSnackbarMessage('Error al crear la ocupación. Por favor, inténtelo de nuevo.');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
-    }
-  };
-
   return (
-    <>
-      <Modal open={open} onClose={onClose} aria-labelledby="add-occupations-modal">
-        <Box sx={modalStyle}>
-          <Typography variant="h6" align="center" component="h2" sx={{ mb: 3 }}>
-            Añadir Nueva Ocupación
-          </Typography>
+    <BaseModal open={open} onClose={onClose} title="Añadir Nueva Ocupación">
+      {({ showSnackbar }) => (
+        <>
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField
@@ -128,44 +64,54 @@ export const AddOccupationsModal: React.FC<AddOccupationsModalProps> = ({
                 value={newOccupation.recOrdviewkeyRcws}
                 type="number"
                 fullWidth
-                onChange={(e) =>
-                  handleInputChange('recOrdviewkeyRcws', parseInt(e.target.value, 10))
-                }
+                onChange={(e) => handleInputChange('recOrdviewkeyRcws', parseInt(e.target.value, 10))}
               />
             </Grid>
             <Grid item xs={6}>
               <TextField
                 label="Estado (1 = Activo, 0 = Inactivo)"
                 value={newOccupation.recStatusregiRcws}
+                select
                 fullWidth
                 onChange={(e) => handleInputChange('recStatusregiRcws', e.target.value)}
-              />
+                SelectProps={{
+                  native: true,
+                }}
+              >
+                <option value="0">Inactivo</option>
+                <option value="1">Activo</option>
+              </TextField>
             </Grid>
           </Grid>
           <Stack direction="row" spacing={2} sx={{ mt: 3, justifyContent: 'center' }}>
-            <Button variant="contained" onClick={handleSave}>
+            <Button
+              variant="contained"
+              onClick={async () => {
+                if (!newOccupation.recTitleworkRcws.trim()) {
+                  showSnackbar('Por favor, complete el campo de título.', 'error');
+                  return;
+                }
+
+                try {
+                  await createOccupation(newOccupation);
+                  showSnackbar('Ocupación creada con éxito.', 'success');
+                  onOccupationAdded();
+                  onClose();
+                  setNewOccupation(defaultNewOccupations);
+                } catch (error) {
+                  console.error('Error al crear la ocupación:', error);
+                  showSnackbar('Error al crear la ocupación. Por favor, inténtelo de nuevo.', 'error');
+                }
+              }}
+            >
               Guardar
             </Button>
             <Button variant="outlined" onClick={onClose}>
               Cancelar
             </Button>
           </Stack>
-        </Box>
-      </Modal>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={SNACKBAR_AUTOHIDE_DURATION}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity={snackbarSeverity}
-          sx={{ width: '100%' }}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </>
+        </>
+      )}
+    </BaseModal>
   );
 };

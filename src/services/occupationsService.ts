@@ -8,6 +8,7 @@ export const GetAllOccupations = async (
   try {
     const response = await api.get<DataOccupations>(`/api/utility/services/getAllServices`, {
       params: { page },
+      timeout: 30000, // Aumentar el timeout
     });
     const { rspData, rspPagination } = response.data;
     return { occupations: rspData, total: rspPagination.totalResults };
@@ -29,7 +30,9 @@ export const createOccupation = async (newOccupation: NewOccupations): Promise<v
     };
 
     console.log("Request Data (createOccupation):", requestData);
-    const response = await api.post(`/api/utility/services/create`, requestData);
+    const response = await api.post(`/api/utility/services/create`, requestData, {
+      timeout: 30000, // Aumentar el timeout
+    });
     console.log("Response Data (createOccupation):", response.data);
   } catch (error) {
     console.error("Error al crear una ocupación:", error);
@@ -37,13 +40,12 @@ export const createOccupation = async (newOccupation: NewOccupations): Promise<v
   }
 };
 
-// Actualizar una ocupación existente
 export const editOccupation = async (occupation: NewOccupations): Promise<void> => {
   try {
     const requestData = {
       rspData: [occupation], // Verifica si esta estructura es la que espera el backend
     };
-
+    
     const response = await api.put(`/api/utility/services/update`, requestData);
 
   } catch (error: any) {
@@ -59,16 +61,12 @@ export const editOccupation = async (occupation: NewOccupations): Promise<void> 
   }
 };
 
-
 // Eliminar una ocupación
 export const deleteOccupation = async (id: string): Promise<void> => {
   try {
     const data = [{ recPKey: id }];
-    await api.patch(`/api/utility/services/delete`, {
-      data,
-      headers: {
-        "Content-Type": "application/json",
-      },
+    await api.patch(`/api/utility/services/delete`, data, {
+      timeout: 30000, // Aumentar el timeout
     });
     console.log("Ocupación eliminada exitosamente:", id);
   } catch (error) {
@@ -86,11 +84,23 @@ export const changeOccupationStatus = async (id: number): Promise<DataOccupation
         recEstreg: 2, // Cambiar al estado deseado (ejemplo: 2 para "desactivado")
       },
     ];
-    const response = await api.patch<DataOccupations>(`/api/utility/services/changestatus`, data);
-    console.log("Response Data (changeOccupationStatus):", response.data);
-    return response.data;
-  } catch (error) {
+
+    // Realizar la solicitud PATCH
+    const response = await api.patch<DataOccupations>(`/api/utility/services/changestatus`, data, {
+      timeout: 30000, // Aumentar el timeout
+    });
+
+    console.log("Estado de la ocupación cambiado exitosamente:", response.data);
+    return response.data; // Devolver los datos de la respuesta
+  } catch (error: any) {
     console.error("Error al cambiar el estado de la ocupación:", error);
+
+    // Captura el mensaje de error del backend
+    if (error.response) {
+      console.error("Response Error Data:", error.response.data);
+      throw new Error(error.response.data.message || "Error al cambiar el estado de la ocupación.");
+    }
+
     throw error;
   }
 };
