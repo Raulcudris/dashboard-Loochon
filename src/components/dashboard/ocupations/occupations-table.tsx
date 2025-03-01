@@ -100,7 +100,7 @@ export function OccupationsTable({
                           estadoMap[row.recStatusregiRcws]?.label === 'Eliminada'
                         }
                       >
-                        Eliminar
+                        Inactivar
                       </Button>
                     </Stack>
                   </TableCell>

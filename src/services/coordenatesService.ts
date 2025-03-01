@@ -93,4 +93,3 @@ export const changeCityStatus = async (id: string): Promise<DataCoordenates> => 
     throw error;
   }
 };
-
