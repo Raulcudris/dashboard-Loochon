@@ -6,10 +6,11 @@ import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { UsersFilters } from '@/components/dashboard/user/users-filters';
 import { UsersTable } from '@/components/dashboard/user/users-table';
 import { AddUserModal } from '@/components/dashboard/user/modals/AddUserModal';
-import { useUsers } from '@/hooks/use-user';
+import { useUser } from '@/hooks/use-users'; // Importar el hook useUsers
 import { useState } from 'react';
 
 export default function UsersPage(): React.JSX.Element {
+  // Usar el hook useUsers para manejar la lista de usuarios
   const {
     users,
     totalUsers,
@@ -21,21 +22,25 @@ export default function UsersPage(): React.JSX.Element {
     handlePageChange,
     handleRowsPerPageChange,
     refreshData,
-  } = useUsers();
+  } = useUser();
 
+  // Estado para controlar la apertura/cierre del modal de añadir usuario
   const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 
+  // Función para abrir el modal de añadir usuario
   const handleOpenAddModal = () => {
     setOpenAddModal(true);
   };
 
+  // Función para cerrar el modal de añadir usuario
   const handleCloseAddModal = () => {
     setOpenAddModal(false);
   };
 
+  // Función para manejar el evento de usuario añadido
   const handleUserAdded = async () => {
-    await refreshData();
-    handleCloseAddModal();
+    await refreshData(); // Refrescar la lista de usuarios
+    handleCloseAddModal(); // Cerrar el modal
   };
 
   return (

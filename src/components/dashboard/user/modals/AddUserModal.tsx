@@ -1,31 +1,8 @@
-'use client';
-
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Modal,
-  Stack,
-  TextField,
-  Typography,
-  Grid,
-  Snackbar,
-  Alert,
-} from '@mui/material';
+import { Box, Button, Stack, TextField, Typography, Grid } from '@mui/material';
 import { createUser } from '../../../../services/userService';
 import { defaultNewUser, NewUser } from '@/interface/userInterface';
-
-const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 420,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4,
-  borderRadius: 2,
-};
+import { BaseModal } from './BaseModal'; // Asegúrate de importar el BaseModal
 
 interface AddUserModalProps {
   open: boolean;
@@ -35,9 +12,6 @@ interface AddUserModalProps {
 
 export const AddUserModal: React.FC<AddUserModalProps> = ({ open, onClose, onUserAdded }) => {
   const [newUser, setNewUser] = useState<NewUser>(defaultNewUser);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
   const handleInputChange = (field: keyof NewUser, value: string | number) => {
     setNewUser((prev) => ({
@@ -46,11 +20,9 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ open, onClose, onUse
     }));
   };
 
-  const handleSave = () => {
+  const handleSave = (showSnackbar: (message: string, severity: 'success' | 'error') => void) => {
     if (!newUser.recNombreReus.trim() || !newUser.recApelidReus.trim() || !newUser.apjCorreoApgm.trim()) {
-      setSnackbarMessage('Por favor, complete los campos obligatorios.');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
+      showSnackbar('Por favor, complete los campos obligatorios.', 'error');
       return;
     }
 
@@ -64,30 +36,19 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ open, onClose, onUse
       .then(() => {
         setNewUser(defaultNewUser);
         onClose();
-        setSnackbarMessage('Usuario creado con éxito.');
-        setSnackbarSeverity('success');
-        setSnackbarOpen(true);
+        showSnackbar('Usuario creado con éxito.', 'success');
         onUserAdded();
       })
       .catch((error) => {
         console.error('Error al crear el usuario:', error);
-        setSnackbarMessage('Error al crear el usuario. Por favor, inténtelo de nuevo.');
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
+        showSnackbar('Error al crear el usuario. Por favor, inténtelo de nuevo.', 'error');
       });
   };
 
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
-  };
-
   return (
-    <>
-      <Modal open={open} onClose={onClose} aria-labelledby="add-user-modal">
-        <Box sx={modalStyle}>
-          <Typography variant="h6" align="center" component="h2" sx={{ mb: 2 }}>
-            Añadir Nuevo Usuario
-          </Typography>
+    <BaseModal open={open} onClose={onClose} title="Añadir Nuevo Usuario">
+      {({ showSnackbar }) => (
+        <>
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField
@@ -166,25 +127,15 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ open, onClose, onUse
             </Grid>
           </Grid>
           <Stack direction="row" spacing={2} sx={{ mt: 2, justifyContent: 'center' }}>
-            <Button variant="contained" onClick={handleSave}>
+            <Button variant="contained" onClick={() => handleSave(showSnackbar)}>
               Guardar
             </Button>
             <Button variant="outlined" onClick={onClose}>
               Cancelar
             </Button>
           </Stack>
-        </Box>
-      </Modal>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </>
+        </>
+      )}
+    </BaseModal>
   );
 };

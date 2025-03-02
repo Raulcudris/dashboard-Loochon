@@ -1,28 +1,10 @@
-'use client';
-
 import { Grid, Stack } from '@mui/material';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 import React, { useEffect, useState } from 'react';
 import { editUser } from '../../../../services/userService';
 import { defaultNewUser, EditUser, NewUser } from '@/interface/userInterface';
-
-const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4,
-  borderRadius: 2,
-};
+import { BaseModal } from './BaseModal'; // Importar BaseModal
 
 interface EditUserModalProps {
   open: boolean;
@@ -38,9 +20,6 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
   onSave,
 }) => {
   const [updatedUser, setUpdatedUser] = useState<EditUser | null>(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
   useEffect(() => {
     if (user) {
@@ -59,11 +38,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
     }
   };
 
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
-
-  const handleSave = async () => {
+  const handleSave = async (showSnackbar: (message: string, severity: 'success' | 'error') => void) => {
     if (updatedUser) {
       try {
         const userToSave: NewUser = {
@@ -72,27 +47,20 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
           recNomusuReus: `${updatedUser.recNombreReus || ''} ${updatedUser.recApelidReus || ''}`.trim(),
         };
         await editUser(userToSave);
-        setSnackbarMessage('Usuario actualizado con éxito.');
-        setSnackbarSeverity('success');
-        setSnackbarOpen(true);
+        showSnackbar('Usuario actualizado con éxito.', 'success');
         onSave(); // Refrescar la lista de usuarios
         onClose(); // Cerrar el modal
       } catch (error) {
         console.error('Error al actualizar el usuario:', error);
-        setSnackbarMessage('Hubo un error al actualizar el usuario. Por favor, inténtelo de nuevo.');
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
+        showSnackbar('Hubo un error al actualizar el usuario. Por favor, inténtelo de nuevo.', 'error');
       }
     }
   };
 
   return (
-    <>
-      <Modal open={open} onClose={onClose} aria-labelledby="edit-user-modal">
-        <Box sx={modalStyle}>
-          <Typography variant="h6" align="center" component="h2" sx={{ mb: 2 }}>
-            Modificar Usuario
-          </Typography>
+    <BaseModal open={open} onClose={onClose} title="Modificar Usuario">
+      {({ showSnackbar }) => (
+        <>
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField
@@ -146,26 +114,15 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
             </Grid>
           </Grid>
           <Stack direction="row" spacing={2} sx={{ mt: 2, justifyContent: 'center' }}>
-            <Button variant="contained" onClick={handleSave}>
+            <Button variant="contained" onClick={() => handleSave(showSnackbar)}>
               Guardar
             </Button>
             <Button variant="outlined" onClick={onClose}>
               Cancelar
             </Button>
           </Stack>
-        </Box>
-      </Modal>
-
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </>
+        </>
+      )}
+    </BaseModal>
   );
 };

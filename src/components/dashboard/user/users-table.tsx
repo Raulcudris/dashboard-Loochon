@@ -19,6 +19,7 @@ import dayjs from 'dayjs';
 import { EditUserModal } from './modals/EditUserModal';
 import { DeleteUserModal } from './modals/DeleteUserModal';
 import { EditUser, UsersTableProps } from '@/interface/index';
+import { useUser } from '@/hooks/use-users'; // Importar el hook useUser
 
 export function UsersTable({
   rows,
@@ -29,34 +30,21 @@ export function UsersTable({
   onRowsPerPageChange,
   onRefresh,
 }: UsersTableProps & { onRefresh: () => void }): React.JSX.Element {
-  const [openEditModal, setOpenEditModal] = React.useState(false);
-  const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
-  const [selectedUser, setSelectedUser] = React.useState<EditUser | null>(null);
+  // Usar el hook useUser para manejar modales y usuarios seleccionados
+  const {
+    openEditModal,
+    openDeleteModal,
+    selectedUser,
+    handleEditClick,
+    handleDeleteClick,
+    handleCloseModals,
+  } = useUser();
 
+  // Mapeo de estados para mostrar el estado del usuario con colores y etiquetas
   const estadoMap: Record<number, { label: string; color: string }> = {
     1: { label: 'Activo', color: 'green' },
     2: { label: 'Inactivo', color: 'orange' },
     3: { label: 'Eliminada', color: 'red' },
-  };
-
-  const handleOpenEditModal = (user: EditUser) => {
-    if (user) {
-      setSelectedUser(user);
-      setOpenEditModal(true);
-    }
-  };
-
-  const handleOpenDeleteModal = (user: EditUser) => {
-    if (user) {
-      setSelectedUser(user);
-      setOpenDeleteModal(true);
-    }
-  };
-
-  const handleCloseModals = () => {
-    setSelectedUser(null);
-    setOpenEditModal(false);
-    setOpenDeleteModal(false);
   };
 
   return (
@@ -111,14 +99,14 @@ export function UsersTable({
                     <Stack direction="row" spacing={1} justifyContent="center">
                       <Button
                         variant="outlined"
-                        onClick={() => handleOpenEditModal(row)}
+                        onClick={() => handleEditClick(row)}
                       >
                         Modificar
                       </Button>
                       <Button
                         variant="outlined"
                         color="error"
-                        onClick={() => handleOpenDeleteModal(row)}
+                        onClick={() => handleDeleteClick(row)}
                         disabled={estadoMap[row.recEstregReus]?.label === 'Eliminada'}
                       >
                         Eliminar
@@ -154,13 +142,19 @@ export function UsersTable({
         open={openEditModal}
         onClose={handleCloseModals}
         user={selectedUser}
-        onSave={onRefresh}
+        onSave={() => {
+          onRefresh(); // Refrescar la lista de usuarios
+          handleCloseModals(); // Cerrar el modal
+        }}
       />
       <DeleteUserModal
         open={openDeleteModal}
         onClose={handleCloseModals}
         user={selectedUser}
-        onConfirm={onRefresh}
+        onConfirm={() => {
+          onRefresh(); // Refrescar la lista de usuarios
+          handleCloseModals(); // Cerrar el modal
+        }}
       />
     </Card>
   );
