@@ -12,7 +12,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node", // Cambiado de "bundler" a "node"
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -21,7 +21,9 @@
       "@/*": [
         "./src/*"
       ]
-    },
+    }
+    // Eliminada la sección "plugins"
+    ,
     "plugins": [
       {
         "name": "next"
@@ -32,8 +34,10 @@
     "**/*.ts",
     "**/*.tsx",
     "next-env.d.ts",
-    ".next/types/**/*.ts"
-, "src/config/apiRequest.ts", "next.config.mjs"  ],
+    ".next/types/**/*.ts",
+    "src/config/apiRequest.ts", // Corregida la coma faltante
+    "next.config.mjs"
+  ],
   "exclude": [
     "node_modules"
   ]

@@ -44,7 +44,7 @@ export const AddCoordenatesModal: React.FC<AddCoordenatesModalProps> = ({
   const [largeMapOpen, setLargeMapOpen] = useState<boolean>(false);
 
   // Usa el hook useCoordenates
-  const { createCoordenate, loading, error } = useCoordenates();
+  const { createCoordenate, loading } = useCoordenates();
 
   const handleInputChange = (field: keyof NewCoordenate, value: string | number) => {
     setNewCoordenate((prev) => ({

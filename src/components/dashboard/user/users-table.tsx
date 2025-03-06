@@ -1,4 +1,3 @@
-// components/dashboard/user/UsersTable.tsx
 import React from 'react';
 import {
   Avatar,
@@ -18,8 +17,8 @@ import {
 import dayjs from 'dayjs';
 import { EditUserModal } from './modals/EditUserModal';
 import { DeleteUserModal } from './modals/DeleteUserModal';
-import { EditUser, UsersTableProps } from '@/interface/index';
-import { useUser } from '@/hooks/use-users'; // Importar el hook useUser
+import { UsersTableProps } from '@/interface';
+import { useUser } from '@/hooks'; 
 
 export function UsersTable({
   rows,
@@ -109,7 +108,7 @@ export function UsersTable({
                         onClick={() => handleDeleteClick(row)}
                         disabled={estadoMap[row.recEstregReus]?.label === 'Eliminada'}
                       >
-                        Eliminar
+                        Inactivar
                       </Button>
                     </Stack>
                   </TableCell>

@@ -13,7 +13,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { OccupationsTableProps } from '@/interface';
+import { OccupationsTableProps, Occupations } from '@/interface'; // Importa el tipo Occupations
 import { EditOccupationsModal } from './modals/EditOccupationsModal';
 import { DeleteOccupationsModal } from './modals/DeleteOccupationsModal';
 import { useOccupations } from '@/hooks/use-occupations';
@@ -26,12 +26,10 @@ export function OccupationsTable({
   onPageChange,
   onRowsPerPageChange,
   onRefresh,
-  onEdit,
-  onDelete,
 }: OccupationsTableProps & {
   onRefresh: () => void;
-  onEdit: (row: any) => void;
-  onDelete: (row: any) => void;
+  onEdit: (row: Occupations) => void; // 💡 Se cambia any por Occupations
+  onDelete: (row: Occupations) => void;
 }): React.JSX.Element {
   const {
     openEditModal,
@@ -42,7 +40,8 @@ export function OccupationsTable({
     handleCloseModals,
   } = useOccupations();
 
-  const estadoMap: Record<string, { label: string; color: string }> = {
+  // Se tipa estadoMap para que acepte number como índice
+  const estadoMap: Record<number, { label: string; color: string }> = {
     1: { label: 'Activo', color: 'green' },
     2: { label: 'Inactivo', color: 'orange' },
     3: { label: 'Eliminada', color: 'red' },
@@ -65,7 +64,7 @@ export function OccupationsTable({
           </TableHead>
           <TableBody>
             {rows.length > 0 ? (
-              rows.map((row, index) => (
+              rows.map((row: Occupations, index: number) => ( // 💡 Se asegura que row sea de tipo Occupations
                 <TableRow key={index} hover>
                   <TableCell align="center">{row.recIdentifikeyRcws}</TableCell>
                   <TableCell align="center">{row.recIdentifikeyRcwk}</TableCell>
@@ -73,15 +72,15 @@ export function OccupationsTable({
                   <TableCell align="center">{row.recDescrworkRcws}</TableCell>
                   <TableCell align="center">{row.recOrdviewkeyRcws}</TableCell>
                   <TableCell align="center">
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: estadoMap[row.recStatusregiRcws]?.color || 'gray',
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      {estadoMap[row.recStatusregiRcws]?.label || 'Inactivo'}
-                    </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: estadoMap[Number(row.recStatusregiRcws)]?.color || 'gray',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {estadoMap[Number(row.recStatusregiRcws)]?.label || 'Inactivo'}
+                  </Typography>
                   </TableCell>
                   <TableCell>
                     <Stack direction="row" spacing={1} justifyContent="center">
@@ -91,17 +90,16 @@ export function OccupationsTable({
                       >
                         Modificar
                       </Button>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        onClick={() => handleDeleteClick(row)}
-                        disabled={
-                          estadoMap[row.recStatusregiRcws]?.label === 'Inactivo' ||
-                          estadoMap[row.recStatusregiRcws]?.label === 'Eliminada'
-                        }
-                      >
-                        Inactivar
-                      </Button>
+                      <Button variant="outlined"
+                              color="error"
+                              onClick={() => handleDeleteClick(row)}
+                              disabled={
+                                estadoMap[Number(row.recStatusregiRcws)]?.label === 'Inactivo' ||
+                                estadoMap[Number(row.recStatusregiRcws)]?.label === 'Eliminada'
+                             }
+                    >
+                      Inactivar
+                    </Button>
                     </Stack>
                   </TableCell>
                 </TableRow>

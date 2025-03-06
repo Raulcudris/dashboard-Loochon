@@ -13,8 +13,7 @@ interface Registry {
 
 export interface NextAppDirEmotionCacheProviderProps {
   options: Omit<OptionsOfCreateCache, 'insertionPoint'>;
-  CacheProvider?: (props: { value: EmotionCache;
-                            children: React.ReactNode }) => React.JSX.Element | null;
+  CacheProvider?: (props: { value: EmotionCache; children: React.ReactNode }) => React.JSX.Element | null;
   children: React.ReactNode;
 }
 
@@ -26,6 +25,7 @@ export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionC
     cache.compat = true;
     const prevInsert = cache.insert;
     let inserted: { name: string; isGlobal: boolean }[] = [];
+    
     cache.insert = (...args) => {
       const [selector, serialized] = args;
 
@@ -35,11 +35,13 @@ export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionC
 
       return prevInsert(...args);
     };
+
     const flush = (): { name: string; isGlobal: boolean }[] => {
       const prevInserted = inserted;
       inserted = [];
       return prevInserted;
     };
+
     return { cache, flush };
   });
 
@@ -53,12 +55,12 @@ export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionC
     let styles = '';
     let dataEmotionAttribute = registry.cache.key;
 
-    const globals: { name: string; style: string | any; }[] = [];
+    const globals: { name: string; style: string }[] = [];
 
     inserted.forEach(({ name, isGlobal }) => {
       const style = registry.cache.inserted[name];
 
-      if (typeof style !== 'boolean') {
+      if (typeof style === 'string') { // ✅ Verifica que `style` sea un string antes de usarlo
         if (isGlobal) {
           globals.push({ name, style });
         } else {
@@ -70,17 +72,16 @@ export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionC
 
     return (
       <React.Fragment>
-        {globals.map(
-          ({ name, style }): React.JSX.Element => (
-            <style
-              dangerouslySetInnerHTML={{ __html: style }}
-              data-emotion={`${registry.cache.key}-global ${name}`}
-              key={name}
-            />
-          )
-        )}
-        {styles ? <style dangerouslySetInnerHTML={{ __html: styles }}
-                         data-emotion={dataEmotionAttribute} /> : null}
+        {globals.map(({ name, style }): React.JSX.Element => (
+          <style
+            dangerouslySetInnerHTML={{ __html: style }}
+            data-emotion={`${registry.cache.key}-global ${name}`}
+            key={name}
+          />
+        ))}
+        {styles ? (
+          <style dangerouslySetInnerHTML={{ __html: styles }} data-emotion={dataEmotionAttribute} />
+        ) : null}
       </React.Fragment>
     );
   });

@@ -14,7 +14,7 @@ interface MapComponentProps {
   isFullScreen?: boolean;
 }
 
-const MapController = ({ coords }: { coords: [number, number] }) => {
+const MapController: React.FC<{ coords: [number, number] }> = ({ coords }) => {
   const map = useMap();
 
   useEffect(() => {
@@ -25,10 +25,10 @@ const MapController = ({ coords }: { coords: [number, number] }) => {
 };
 
 const MapComponent: React.FC<MapComponentProps> = ({ coordinates, setCoordinates, isDraggable = false, isFullScreen = false }) => {
-  const [markerIcon, setMarkerIcon] = useState<any>(null);
+  const [markerIcon, setMarkerIcon] = useState<L.Icon | null>(null); // ✅ Usamos el tipo correcto
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && L) {
       setMarkerIcon(
         new L.Icon({
           iconUrl: '/assets/marker-icon.png',

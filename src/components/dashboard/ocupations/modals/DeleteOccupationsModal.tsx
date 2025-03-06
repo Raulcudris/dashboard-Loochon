@@ -27,10 +27,7 @@ export const DeleteOccupationsModal: React.FC<{
               variant="contained"
               color="error"
               onClick={async () => {
-                if (!occupation) {
-                  showSnackbar('No se ha seleccionado ninguna ocupación para eliminar.', 'error');
-                  return;
-                }
+                if (!occupation) return;
 
                 setIsDeleting(true);
 
@@ -42,19 +39,18 @@ export const DeleteOccupationsModal: React.FC<{
                   setTimeout(() => {
                     onClose(); // Cerrar el modal después de 2 segundos
                   }, 2000);
-                } catch (error: any) {
+                } catch (error: unknown) {
                   console.error('Error al eliminar la ocupación:', error);
-                  // Mostrar mensaje de error específico del backend si está disponible
-                  const errorMessage = error.message || 'Error al eliminar la ocupación. Por favor, inténtelo de nuevo.';
+                  const errorMessage = error instanceof Error ? error.message : String(error);
                   showSnackbar(errorMessage, 'error');
                 } finally {
                   setIsDeleting(false);
                 }
               }}
-              disabled={isDeleting}
+              disabled={isDeleting || !occupation} 
               startIcon={isDeleting && <CircularProgress size={20} color="inherit" />}
             >
-              Eliminar
+              Inactivar
             </Button>
             <Button variant="outlined" onClick={onClose} disabled={isDeleting}>
               Cancelar

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Stack, TextField, Typography, Grid } from '@mui/material';
+import { Button, Stack, TextField, Grid } from '@mui/material';
 import { createUser } from '../../../../services/userService';
 import { defaultNewUser, NewUser } from '@/interface/userInterface';
 import { BaseModal } from './BaseModal'; // Asegúrate de importar el BaseModal

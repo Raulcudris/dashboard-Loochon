@@ -84,7 +84,7 @@ export const deleteUser = async (id: number): Promise<void> => {
 };
 
 // Cambiar estado de usuario
-export const changeUserStatus = async (id: String): Promise<DataUsers> => {
+export const changeUserStatus = async (id: string): Promise<DataUsers> => {
   try {
     const data = [
       {

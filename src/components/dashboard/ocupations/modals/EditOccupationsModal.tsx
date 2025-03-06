@@ -15,6 +15,8 @@ export const EditOccupationsModal: React.FC<{
   useEffect(() => {
     if (occupation) {
       setUpdatedOccupation(occupation);
+    } else {
+      setUpdatedOccupation(defaultNewOccupations);
     }
   }, [occupation]);
 
@@ -33,7 +35,7 @@ export const EditOccupationsModal: React.FC<{
             <Grid item xs={6}>
               <TextField
                 label="Clave"
-                value={updatedOccupation.recIdentifikeyRcws}
+                value={updatedOccupation.recIdentifikeyRcws || ''}
                 fullWidth
                 onChange={(e) => handleInputChange('recIdentifikeyRcws', e.target.value)}
               />
@@ -41,7 +43,7 @@ export const EditOccupationsModal: React.FC<{
             <Grid item xs={6}>
               <TextField
                 label="Categoría"
-                value={updatedOccupation.recIdentifikeyRcwk}
+                value={updatedOccupation.recIdentifikeyRcwk || ''}
                 fullWidth
                 onChange={(e) => handleInputChange('recIdentifikeyRcwk', e.target.value)}
               />
@@ -49,7 +51,7 @@ export const EditOccupationsModal: React.FC<{
             <Grid item xs={12}>
               <TextField
                 label="Título"
-                value={updatedOccupation.recTitleworkRcws}
+                value={updatedOccupation.recTitleworkRcws || ''}
                 fullWidth
                 onChange={(e) => handleInputChange('recTitleworkRcws', e.target.value)}
               />
@@ -57,7 +59,7 @@ export const EditOccupationsModal: React.FC<{
             <Grid item xs={12}>
               <TextField
                 label="Descripción"
-                value={updatedOccupation.recDescrworkRcws}
+                value={updatedOccupation.recDescrworkRcws || ''}
                 fullWidth
                 multiline
                 rows={3}
@@ -67,24 +69,25 @@ export const EditOccupationsModal: React.FC<{
             <Grid item xs={6}>
               <TextField
                 label="Orden de Visualización"
-                value={updatedOccupation.recOrdviewkeyRcws}
+                value={updatedOccupation.recOrdviewkeyRcws || 0}
                 fullWidth
-                onChange={(e) => handleInputChange('recOrdviewkeyRcws', e.target.value)}
+                type="number"
+                onChange={(e) => handleInputChange('recOrdviewkeyRcws', Number(e.target.value))}
               />
             </Grid>
             <Grid item xs={6}>
               <TextField
                 label="Estado (1 = Activo, 0 = Inactivo)"
-                value={updatedOccupation.recStatusregiRcws}
+                value={updatedOccupation.recStatusregiRcws || 0}
                 select
                 fullWidth
-                onChange={(e) => handleInputChange('recStatusregiRcws', e.target.value)}
+                onChange={(e) => handleInputChange('recStatusregiRcws', Number(e.target.value))}
                 SelectProps={{
                   native: true,
                 }}
               >
-                <option value="0">Inactivo</option>
-                <option value="1">Activo</option>
+                <option value={0}>Inactivo</option>
+                <option value={1}>Activo</option>
               </TextField>
             </Grid>
           </Grid>
@@ -93,14 +96,15 @@ export const EditOccupationsModal: React.FC<{
               variant="contained"
               onClick={async () => {
                 try {
-                  console.log("Iniciando actualización..."); // Depuración
+                  console.log('Iniciando actualización...', updatedOccupation); // Depuración
                   await editOccupation(updatedOccupation);
                   showSnackbar('Ocupación actualizada con éxito.', 'success');
                   onSave();
                   setTimeout(() => {
                     onClose(); // Cierra el modal después de 2 segundos
                   }, 2000);
-                } catch (error) {
+                } catch (error: unknown) {
+                  console.error('Error al actualizar la ocupación:', error);
                   showSnackbar('Error al actualizar la ocupación. Por favor, inténtelo de nuevo.', 'error');
                 }
               }}

@@ -23,7 +23,7 @@ export function useUser() {
     setLoading(true);
     setError(null);
     try {
-      const { users: fetchedUsers, total } = await GetAllUsers(page + 1);
+      const { users: fetchedUsers } = await GetAllUsers(page + 1);
 
       // Aplicar filtro
       const filteredUsers = fetchedUsers.filter(

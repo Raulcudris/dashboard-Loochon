@@ -1,4 +1,3 @@
-// components/dashboard/user/UsersPage.tsx
 'use client';
 
 import { Stack, Typography, Button } from '@mui/material';
@@ -16,7 +15,6 @@ export default function UsersPage(): React.JSX.Element {
     totalUsers,
     page,
     rowsPerPage,
-    loading,
     error,
     handleFilterChange,
     handlePageChange,

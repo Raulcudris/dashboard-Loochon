@@ -1,5 +1,6 @@
 import api from "@/config/apiRequest";
 import { DataOccupations, NewOccupations } from "@/interface";
+import axios from "axios"; // Importa Axios para manejar errores correctamente
 
 // Obtener todas las ocupaciones con paginación
 export const GetAllOccupations = async (
@@ -8,12 +9,16 @@ export const GetAllOccupations = async (
   try {
     const response = await api.get<DataOccupations>(`/api/utility/services/getAllServices`, {
       params: { page },
-      timeout: 30000, // Aumentar el timeout
+      timeout: 30000,
     });
     const { rspData, rspPagination } = response.data;
     return { occupations: rspData, total: rspPagination.totalResults };
-  } catch (error) {
-    console.error("Error al obtener todas las ocupaciones:", error);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("Error al obtener ocupaciones:", error.response?.data || error.message);
+    } else {
+      console.error("Error inesperado al obtener ocupaciones:", error);
+    }
     return { occupations: [], total: 0 };
   }
 };
@@ -30,47 +35,50 @@ export const createOccupation = async (newOccupation: NewOccupations): Promise<v
     };
 
     console.log("Request Data (createOccupation):", requestData);
-    const response = await api.post(`/api/utility/services/create`, requestData, {
-      timeout: 30000, // Aumentar el timeout
+    await api.post(`/api/utility/services/create`, requestData, {
+      timeout: 30000,
     });
-    console.log("Response Data (createOccupation):", response.data);
-  } catch (error) {
-    console.error("Error al crear una ocupación:", error);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("Error al crear ocupación:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Error al crear la ocupación.");
+    }
     throw error;
   }
 };
 
+// Editar una ocupación
 export const editOccupation = async (occupation: NewOccupations): Promise<void> => {
   try {
     const requestData = {
-      rspData: [occupation], // Verifica si esta estructura es la que espera el backend
+      rspData: [occupation],
     };
-    
-    const response = await api.put(`/api/utility/services/update`, requestData);
 
-  } catch (error: any) {
-    console.error("Error al actualizar la ocupación:", error);
-
-    // Captura el mensaje de error del backend
-    if (error.response) {
-      console.error("Response Error Data:", error.response.data);
-      throw new Error(error.response.data.message || "Error al actualizar la ocupación.");
+    await api.put(`/api/utility/services/update`, requestData, {
+      timeout: 30000,
+    });
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("Error al actualizar la ocupación:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Error al actualizar la ocupación.");
     }
-
     throw error;
   }
 };
 
 // Eliminar una ocupación
-export const deleteOccupation = async (id: string): Promise<void> => {
+export const deleteOccupation = async (id: string | number): Promise<void> => {
   try {
     const data = [{ recPKey: id }];
     await api.patch(`/api/utility/services/delete`, data, {
-      timeout: 30000, // Aumentar el timeout
+      timeout: 30000,
     });
     console.log("Ocupación eliminada exitosamente:", id);
-  } catch (error) {
-    console.error("Error al eliminar la ocupación:", error);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("Error al eliminar ocupación:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Error al eliminar la ocupación.");
+    }
     throw error;
   }
 };
@@ -85,22 +93,17 @@ export const changeOccupationStatus = async (id: number): Promise<DataOccupation
       },
     ];
 
-    // Realizar la solicitud PATCH
     const response = await api.patch<DataOccupations>(`/api/utility/services/changestatus`, data, {
-      timeout: 30000, // Aumentar el timeout
+      timeout: 30000,
     });
 
     console.log("Estado de la ocupación cambiado exitosamente:", response.data);
-    return response.data; // Devolver los datos de la respuesta
-  } catch (error: any) {
-    console.error("Error al cambiar el estado de la ocupación:", error);
-
-    // Captura el mensaje de error del backend
-    if (error.response) {
-      console.error("Response Error Data:", error.response.data);
-      throw new Error(error.response.data.message || "Error al cambiar el estado de la ocupación.");
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("Error al cambiar el estado de la ocupación:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Error al cambiar el estado de la ocupación.");
     }
-
     throw error;
   }
 };

@@ -75,11 +75,11 @@ export const useCoordenates = () => {
   };
 
   // Función para eliminar una coordenada (cambiar su estado)
-  const deleteCoordenate = async (coordenateId: string) => {
+  const deleteCoordenate = async (coordenateId:number ) => {
     setLoading(true);
     setError(null);
     try {
-      await changeCityStatus(coordenateId);
+      await changeCityStatus(coordenateId, "2");
       setLoading(false);
       return true; // Indica que la eliminación fue exitosa
     } catch (err) {

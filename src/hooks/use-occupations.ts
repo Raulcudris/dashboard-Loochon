@@ -1,16 +1,17 @@
 import { useState } from 'react';
+import { Occupations } from '@/interface'; 
 
 export function useOccupations() {
-  const [openEditModal, setOpenEditModal] = useState(false);
-  const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [selectedOccupation, setSelectedOccupation] = useState<any>(null);
+  const [openEditModal, setOpenEditModal] = useState<boolean>(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
+  const [selectedOccupation, setSelectedOccupation] = useState<Occupations | null>(null); 
 
-  const handleEditClick = (occupation: any) => {
+  const handleEditClick = (occupation: Occupations) => {
     setSelectedOccupation(occupation);
     setOpenEditModal(true);
   };
 
-  const handleDeleteClick = (occupation: any) => {
+  const handleDeleteClick = (occupation: Occupations) => { 
     setSelectedOccupation(occupation);
     setOpenDeleteModal(true);
   };

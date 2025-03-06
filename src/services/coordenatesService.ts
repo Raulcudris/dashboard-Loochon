@@ -1,5 +1,6 @@
 import api from "@/config/apiRequest";
-import { DataCoordenates, NewCoordenate } from "@/interface";
+import { DataCoordenates, NewCoordenate, EditCoordenate } from "@/interface";
+import axios from "axios"; // Importa Axios para manejar errores correctamente
 
 // Obtener todas las ciudades con parámetros personalizados
 export const GetAllCity = async (
@@ -16,11 +17,17 @@ export const GetAllCity = async (
         parameter,
         filter,
       },
+      timeout: 30000,
     });
+
     const { rspData, rspPagination } = response.data;
     return { coordenates: rspData, total: rspPagination.totalResults };
-  } catch (error) {
-    console.error("Error al obtener todas las ciudades:", error);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("Error al obtener todas las ciudades:", error.response?.data || error.message);
+    } else {
+      console.error("Error inesperado al obtener todas las ciudades:", error);
+    }
     return { coordenates: [], total: 0 };
   }
 };
@@ -36,60 +43,85 @@ export const createCity = async (newCoordenates: NewCoordenate): Promise<void> =
       rspData: [newCoordenates],
     };
 
-    const response = await api.post(`/api/utility/city/create`, requestData);
-  } catch (error) {
-    console.error("Error al crear la ciudad:", error);
+    console.log("Request Data (createCity):", requestData);
+    const response = await api.post(`/api/utility/city/create`, requestData, {
+      timeout: 30000,
+    });
+    console.log("Response Data (createCity):", response.data);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("Error al crear la ciudad:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Error al crear la ciudad.");
+    }
     throw error;
   }
 };
 
 // Actualizar una ciudad existente
-export const editCity = async (coordenates: NewCoordenate): Promise<void> => {
+export const editCity = async (coordenates: EditCoordenate): Promise<void> => {
   try {
     const requestData = {
       rspData: [coordenates],
     };
 
-    await api.put(`/api/utility/city/update`, requestData);
-  } catch (error) {
-    console.error("Error al actualizar la ciudad:", error);
+    console.log("Request Data (editCity):", requestData);
+    const response = await api.put(`/api/utility/city/update`, requestData, {
+      timeout: 30000,
+    });
+    console.log("Response Data (editCity):", response.data);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("Error al actualizar la ciudad:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Error al actualizar la ciudad.");
+    }
     throw error;
   }
 };
 
 // Eliminar una ciudad
-export const deleteCity = async (id: String): Promise<void> => {
+export const deleteCity = async (id: number): Promise<void> => {
   try {
     const data = [{ recPKey: id }];
-    //console.log("Request Data (deleteCity):", data);
-    await api.delete(`/api/utility/city/delete`, {
-      data,
-      headers: {
-        "Content-Type": "application/json",
-      },
+    console.log("Request Data (deleteCity):", data);
+    await api.patch(`/api/utility/city/delete`, data, {
+      timeout: 30000,
     });
-  } catch (error) {
-    console.error("Error al eliminar la ciudad:", error);
+    console.log("Ciudad eliminada exitosamente:", id);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("Error al eliminar la ciudad:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Error al eliminar la ciudad.");
+    }
     throw error;
   }
 };
 
 // Cambiar el estado de una ciudad
-export const changeCityStatus = async (id: string): Promise<DataCoordenates> => {
+export const changeCityStatus = async (id: number, newStatus: string): Promise<DataCoordenates> => {
   try {
     const data = [
       {
-        "recPKey": id,
-        "recEstreg": "2", // Cambiar estado
+        recPKey: id,
+        recEstreg: newStatus,
       },
     ];
 
-    console.log(data)
-    const response = await api.patch<DataCoordenates>(`/api/utility/city/changestatus`, data);
-    console.log("Response Data (changeCityStatus):", response.data);
+    console.log("Request Data (changeCityStatus):", data);
+
+    const response = await api.patch<DataCoordenates>(`/api/utility/city/changestatus`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      timeout: 30000,
+    });
+
+    console.log("Estado de la ciudad cambiado exitosamente:", response.data);
     return response.data;
-  } catch (error) {
-    console.error("Error al cambiar el estado de la ciudad:", error);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("Error al cambiar el estado de la ciudad:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Error al cambiar el estado de la ciudad.");
+    }
     throw error;
   }
 };

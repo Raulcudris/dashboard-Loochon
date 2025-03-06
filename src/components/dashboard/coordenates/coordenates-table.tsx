@@ -14,10 +14,10 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { CoordenatesTableProps, EditCoordenate } from '@/interface';
+import { CoordenatesTableProps } from '@/interface';
 import { EditCoordenatesModal } from './modals/EditCoordenatesModal';
 import { DeleteCoordenatesModal } from './modals/DeleteCoordenatesModal';
-import { useCoordenates } from '@/hooks/use-coordenates'; // Importa el hook
+import { useCoordenates } from '@/hooks/index'; // Importa el hook
 
 export function CoordenatesTable({
   rows,
@@ -64,6 +64,7 @@ export function CoordenatesTable({
               <TableCell align="center">Nombre Departamento</TableCell>
               <TableCell align="center">Código Municipio</TableCell>
               <TableCell align="center">Nombre Municipio</TableCell>
+              <TableCell align="center">Estado</TableCell>
               <TableCell align="center">Acciones</TableCell>
             </TableRow>
           </TableHead>
@@ -85,6 +86,15 @@ export function CoordenatesTable({
                   <TableCell align="center">{row.state?.sisNombreSidp}</TableCell>
                   <TableCell align="center">{row.city?.sisIdemunSimu}</TableCell>
                   <TableCell align="center">{row.city?.sisNombreSimu}</TableCell>
+                  <TableCell align="center">
+                      <Typography variant="body2"
+                                  sx={{
+                                     color: estadoMap[row.sisEstregSipr]?.color || 'gray',
+                                     fontWeight: 'bold',
+                                     }} >
+                                        {estadoMap[row.sisEstregSipr]?.label || 'Inactivo'}
+                                      </Typography>
+                  </TableCell>                  
                   <TableCell align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
                       <Button
@@ -121,11 +131,12 @@ export function CoordenatesTable({
         count={count}
         page={page}
         rowsPerPage={rowsPerPage}
-        onPageChange={onPageChange}
+        onPageChange={(_event, newPage) => onPageChange(_event, newPage)} // 🔥 SOLUCIÓN
         labelRowsPerPage="Ciudades y municipios por página"
         onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={[5, 10, 25]}
       />
+
       {/* Modal de edición */}
       <EditCoordenatesModal
         open={isEditModalOpen}
@@ -137,7 +148,7 @@ export function CoordenatesTable({
       <DeleteCoordenatesModal
         open={isDeleteModalOpen}
         onClose={handleCloseModals}
-        coordenateId={selectedCoordenates?.sisCodproSipr || null}
+        coordenateId={selectedCoordenates?.sisIdeunikeySipr || null}
         coordenateName={selectedCoordenates?.sisNombreSipr}
         onDeleteSuccess={onRefresh}
       />

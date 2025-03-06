@@ -1,20 +1,15 @@
-'use client';
+'use client'; 
 
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-import React, { useEffect, useState } from 'react';
-import { generateMetadata } from '@/utils/generateMetadata';
+import React, { useEffect, useState, useCallback } from 'react';
 import { GetAllOccupations } from '@/services/index';
 import { Occupations } from '@/interface/index';
 import { OccupationsFilters } from '@/components/dashboard/ocupations/occupations-filters';
 import { OccupationsTable } from '@/components/dashboard/ocupations/occupations-table';
 import { AddOccupationsModal } from '@/components/dashboard/ocupations/modals/AddOccupationsModal';
-import { EditOccupationsModal } from '@/components/dashboard/ocupations/modals/EditOccupationsModal';
-import { DeleteOccupationsModal } from '@/components/dashboard/ocupations/modals/DeleteOccupationsModal';
-
-export const metaData = generateMetadata('Occupations');
 
 export default function Page(): React.JSX.Element {
   const [rows, setRows] = useState<Occupations[]>([]);
@@ -25,26 +20,26 @@ export default function Page(): React.JSX.Element {
 
   // Estados para modales
   const [openAddModal, setOpenAddModal] = useState<boolean>(false);
-  const [openEditModal, setOpenEditModal] = useState<boolean>(false);
-  const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
-  const [selectedOccupation, setSelectedOccupation] = useState<Occupations | null>(null);
+  const [, setOpenEditModal] = useState<boolean>(false);
+  const [, setOpenDeleteModal] = useState<boolean>(false);
+  const [, setSelectedOccupation] = useState<Occupations | null>(null);
 
-  // Función para obtener datos
-  const fetchData = async () => {
+
+  const fetchData = useCallback(async () => {
     try {
       const { occupations: fetchedOccupations } = await GetAllOccupations(page + 1);
 
       // Aplicar filtro y paginación
       const filteredOccupations = fetchedOccupations.filter((occupation) => {
-        const title = occupation.recTitleworkRcws?.toLowerCase() ||'';
-        const clave = occupation.recIdentifikeyRcws?.toLowerCase() ||'';
+        const title = occupation.recTitleworkRcws?.toLowerCase() || '';
+        const clave = occupation.recIdentifikeyRcws?.toLowerCase() || '';
         const description = occupation.recDescrworkRcws?.toLowerCase() || '';
         const location = occupation.recKeylocationRcws?.toLowerCase() || '';
-        const categoria	 = occupation.recIdentifikeyRcwk?.toLowerCase() || '';
+        const categoria = occupation.recIdentifikeyRcwk?.toLowerCase() || '';
         return (
           title.includes(filter.toLowerCase()) ||
           description.includes(filter.toLowerCase()) ||
-          location.includes(filter.toLowerCase())||
+          location.includes(filter.toLowerCase()) ||
           clave.includes(filter.toLowerCase()) ||
           categoria.includes(filter.toLowerCase())
         );
@@ -60,85 +55,57 @@ export default function Page(): React.JSX.Element {
     } catch (error) {
       console.error('Error al cargar ocupaciones:', error);
     }
-  };
+  }, [page, rowsPerPage, filter]); 
 
   useEffect(() => {
     fetchData();
-  }, [page, rowsPerPage, filter]);
-
-  const handleFilterChange = (newFilter: string) => {
-    setFilter(newFilter);
-    setPage(0);
-  };
-
-  const handlePageChange = (_event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleRefresh = () => {
-    fetchData();
-  };
-
-  const handleAdd = () => {
-    setOpenAddModal(true);
-  };
-
-  const handleEdit = (occupation: Occupations) => {
-    setSelectedOccupation(occupation);
-    setOpenEditModal(true);
-  };
-
-  const handleDelete = (occupation: Occupations) => {
-    setSelectedOccupation(occupation);
-    setOpenDeleteModal(true);
-  };
-
-  const handleCloseModals = () => {
-    setOpenAddModal(false);
-    setOpenEditModal(false);
-    setOpenDeleteModal(false);
-    setSelectedOccupation(null);
-  };
+  }, [fetchData]); 
 
   return (
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">Gestión de Ocupaciones y servicios</Typography>
+          <Typography variant="h4">Gestión de Ocupaciones y Servicios</Typography>
         </Stack>
         <div>
           <Button
             startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
             variant="contained"
-            onClick={handleAdd}
+            onClick={() => setOpenAddModal(true)}
           >
             Añadir
           </Button>
         </div>
       </Stack>
-      <OccupationsFilters onFilterChange={handleFilterChange} />
+
+      <OccupationsFilters onFilterChange={(newFilter) => {
+        setFilter(newFilter);
+        setPage(0);
+      }} />
+
       <OccupationsTable
         rows={rows}
         count={count}
         page={page}
         rowsPerPage={rowsPerPage}
-        onPageChange={handlePageChange}
-        onRowsPerPageChange={handleRowsPerPageChange}
-        onRefresh={handleRefresh}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onPageChange={(_event, newPage) => setPage(newPage)}
+        onRowsPerPageChange={(e) => setRowsPerPage(parseInt(e.target.value, 10))}
+        onRefresh={fetchData}
+        onEdit={(occupation) => {
+          setSelectedOccupation(occupation);
+          setOpenEditModal(true);
+        }}
+        onDelete={(occupation) => {
+          setSelectedOccupation(occupation);
+          setOpenDeleteModal(true);
+        }}
       />
 
       <AddOccupationsModal
         open={openAddModal}
-        onClose={handleCloseModals}
-        onOccupationAdded={handleRefresh}
-      />      
+        onClose={() => setOpenAddModal(false)}
+        onOccupationAdded={fetchData}
+      />
     </Stack>
   );
 }

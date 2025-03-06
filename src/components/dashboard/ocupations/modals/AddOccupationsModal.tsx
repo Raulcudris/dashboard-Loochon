@@ -1,4 +1,3 @@
-// components/dashboard/occupations/AddOccupationsModal.tsx
 import React, { useState } from 'react';
 import { Button, Stack, TextField, Grid } from '@mui/material';
 import { BaseModal } from '@/components/dashboard/ocupations/modals/BaseModal';
@@ -64,7 +63,9 @@ export const AddOccupationsModal: React.FC<{
                 value={newOccupation.recOrdviewkeyRcws}
                 type="number"
                 fullWidth
-                onChange={(e) => handleInputChange('recOrdviewkeyRcws', parseInt(e.target.value, 10))}
+                onChange={(e) =>
+                  handleInputChange('recOrdviewkeyRcws', e.target.value ? parseInt(e.target.value, 10) : 0)
+                }
               />
             </Grid>
             <Grid item xs={6}>
@@ -73,13 +74,13 @@ export const AddOccupationsModal: React.FC<{
                 value={newOccupation.recStatusregiRcws}
                 select
                 fullWidth
-                onChange={(e) => handleInputChange('recStatusregiRcws', e.target.value)}
+                onChange={(e) => handleInputChange('recStatusregiRcws', Number(e.target.value))}
                 SelectProps={{
                   native: true,
                 }}
               >
-                <option value="0">Inactivo</option>
-                <option value="1">Activo</option>
+                <option value={0}>Inactivo</option>
+                <option value={1}>Activo</option>
               </TextField>
             </Grid>
           </Grid>
@@ -98,7 +99,7 @@ export const AddOccupationsModal: React.FC<{
                   onOccupationAdded();
                   onClose();
                   setNewOccupation(defaultNewOccupations);
-                } catch (error) {
+                } catch (error: unknown) {
                   console.error('Error al crear la ocupación:', error);
                   showSnackbar('Error al crear la ocupación. Por favor, inténtelo de nuevo.', 'error');
                 }

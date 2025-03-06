@@ -44,12 +44,12 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
 }) => {
   const [updatedCoordenate, setUpdatedCoordenate] = useState<EditCoordenate>(defaultNewCoordenate);
   const [temporaryCoordenate, setTemporaryCoordenate] = useState<EditCoordenate>(defaultNewCoordenate);
-  const [smallMapCoords, setSmallMapCoords] = useState<[number, number]>([0, 0]); // Coordenadas del mapa pequeño
+  const [, setSmallMapCoords] = useState<[number, number]>([0, 0]); // Coordenadas del mapa pequeño
   const [isModified, setIsModified] = useState(false);
   const [largeMapOpen, setLargeMapOpen] = useState<boolean>(false);
 
   // Usa el hook useCoordenates
-  const { editCoordenate, loading, error } = useCoordenates();
+  const { editCoordenate, loading } = useCoordenates();
 
   useEffect(() => {
     if (coordenate) {

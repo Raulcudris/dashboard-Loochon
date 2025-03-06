@@ -1,4 +1,4 @@
-'use client';
+'use client'; 
 
 import { Stack, Typography } from '@mui/material';
 import { UserCard } from '@/components/dashboard/user/user-card';
@@ -16,8 +16,8 @@ export default function Page(): React.JSX.Element {
       {/* Cards de submenús */}
       <Stack direction="row" spacing={3} flexWrap="wrap" useFlexGap>
         <UserCard
-          title="Coordenadas y ubicacion"
-          description="Ver y gestionar todos las coordenadas registradas"
+          title="Coordenadas y ubicación"
+          description="Ver y gestionar todas las coordenadas registradas"
           icon={<coordenatesIcons.mapPin size={32} />} // Usa el icono como componente
           href={`${paths.dashboard.coordenates}/coordenates-list`} // Ruta para listar ciudades
         />

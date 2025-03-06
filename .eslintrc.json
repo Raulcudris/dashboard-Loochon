@@ -2,15 +2,15 @@
   "extends": [
     "next/core-web-vitals",
     "next/typescript",
-    "plugin:@typescript-eslint/recommended", // Añade las reglas recomendadas para TypeScript
+    "plugin:@typescript-eslint/recommended",
     "plugin:import/typescript",
-    "prettier" // Opcional: si usas Prettier para formateo
+    "prettier"
   ],
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
   "parserOptions": {
     "project": "./tsconfig.json",
-    "tsconfigRootDir": "__dirname", // necesario para resolver el proyecto en configuraciones anidadas
+    "tsconfigRootDir": ".", // Cambia "__dirname" a "."
     "ecmaVersion": 2020,
     "sourceType": "module"
   },
@@ -36,10 +36,10 @@
         "ignoreOnInitialization": true
       }
     ],
-    "import/no-default-export": "off", // Next.js requiere exportaciones por defecto en sus páginas y API
-    "no-redeclare": "off", // Para permitir sobrecargas de funciones en TypeScript
-    "react/react-in-jsx-scope": "off", // Next.js no requiere importar React en cada archivo
-    "@typescript-eslint/explicit-module-boundary-types": "off" // Opcional: puedes habilitarla si quieres tipos explícitos
+    "import/no-default-export": "off",
+    "no-redeclare": "off",
+    "react/react-in-jsx-scope": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off"
   },
   "settings": {
     "import/resolver": {

@@ -1,5 +1,6 @@
 // **Interfaz para una coordenada** (estructura esperada de la API)
 export interface NewCoordenate {
+  sisIdeunikeySipr: number ; //Clave primaria única
   sisCodproSipr: string; // Código de la provincia
   sisCodmunSimu: string; // Código del municipio
   sisIdedptSidp: string; // ID del departamento
@@ -19,6 +20,7 @@ export interface NewCoordenate {
 
 // Valores predeterminados para una nueva coordenada
 export const defaultNewCoordenate: NewCoordenate = {
+  sisIdeunikeySipr: 1,
   sisCodproSipr: '',
   sisCodmunSimu: '',
   sisIdedptSidp: '',
@@ -36,17 +38,16 @@ export const defaultNewCoordenate: NewCoordenate = {
   state: { sisIdedptSidp: '', sisCoddptSidp: '', sisNombreSidp: '' },
 };
 
-
 // **Interfaz para editar una coordenada** (parcial de `NewCoordenate`)
 export interface EditCoordenate extends NewCoordenate {
-  sisCodproSipr: string; // Clave obligatoria para identificar la coordenada
+  sisIdeunikeySipr: number; // Clave obligatoria para identificar la coordenada
 }
 
 export interface Coordenates extends NewCoordenate {
-  sisCodproSipr: string; // Clave obligatoria para identificar la coordenada
+  sisIdeunikeySipr: number; // Clave obligatoria para identificar la coordenada
   sisEstregSipr: string;
   city?: City; // Información de la ciudad
-  state? : State;
+  state?: State;
 }
 
 // **Información de un estado (departamento)**
@@ -57,7 +58,7 @@ export interface State {
 }
 
 // **Información de una ciudad (municipio)**
- interface City {
+interface City {
   sisCodmunSimu: string; // Código del municipio
   sisIdemunSimu: string; // ID del municipio
   sisNombreSimu: string; // Nombre del municipio
