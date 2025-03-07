@@ -17,7 +17,7 @@ import {
 import { CoordenatesTableProps } from '@/interface';
 import { EditCoordenatesModal } from './modals/EditCoordenatesModal';
 import { DeleteCoordenatesModal } from './modals/DeleteCoordenatesModal';
-import { useCoordenates } from '@/hooks/index'; // Importa el hook
+import { useCoordenates } from '@/hooks/index'; 
 
 export function CoordenatesTable({
   rows,
@@ -28,7 +28,6 @@ export function CoordenatesTable({
   onRowsPerPageChange,
   onRefresh,
 }: CoordenatesTableProps & { onRefresh: () => void }): React.JSX.Element {
-  // Usa el hook useCoordenates
   const {
     isEditModalOpen,
     isDeleteModalOpen,
@@ -131,7 +130,7 @@ export function CoordenatesTable({
         count={count}
         page={page}
         rowsPerPage={rowsPerPage}
-        onPageChange={(_event, newPage) => onPageChange(_event, newPage)} // 🔥 SOLUCIÓN
+        onPageChange={(_event, newPage) => onPageChange(_event, newPage)} 
         labelRowsPerPage="Ciudades y municipios por página"
         onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={[5, 10, 25]}

@@ -1,4 +1,3 @@
-// components/dashboard/coordenates/CoordenatesCard.tsx
 import Link from 'next/link';
 import { Card, CardContent, Typography, Stack } from '@mui/material';
 import type { ReactNode } from 'react';
@@ -7,7 +6,7 @@ interface CoordenatesCardProps {
   title: string;
   description: string;
   icon: ReactNode;
-  href?: string; // href es opcional y por defecto será "/"
+  href?: string; 
 }
 
 export function CoordenatesCard({ title, description, icon, href = '/' }: CoordenatesCardProps) {
@@ -17,7 +16,7 @@ export function CoordenatesCard({ title, description, icon, href = '/' }: Coorde
         sx={{
           cursor: 'pointer',
           '&:hover': {
-            boxShadow: 6, // Efecto de sombra al pasar el mouse
+            boxShadow: 6, 
           },
         }}
       >
