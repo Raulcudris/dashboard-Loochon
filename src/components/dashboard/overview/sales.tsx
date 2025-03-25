@@ -30,10 +30,10 @@ export function Sales({ chartSeries, sx }: SalesProps): React.JSX.Element {
           <Button color="inherit"
                   size="small"
                   startIcon={<ArrowClockwiseIcon fontSize="var(--icon-fontSize-md)" />}>
-            Sync
+            Mas
           </Button>
         }
-        title="Sales"
+        title="Estadisticas"
       />
       <CardContent>
         <Chart height={350} options={chartOptions} series={chartSeries} type="bar" width="100%" />
@@ -41,7 +41,7 @@ export function Sales({ chartSeries, sx }: SalesProps): React.JSX.Element {
       <Divider />
       <CardActions sx={{ justifyContent: 'flex-end' }}>
         <Button color="inherit" endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />} size="small">
-          Overview
+          Resumen
         </Button>
       </CardActions>
     </Card>

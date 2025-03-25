@@ -28,7 +28,7 @@ export function OccupationsTable({
   onRefresh,
 }: OccupationsTableProps & {
   onRefresh: () => void;
-  onEdit: (row: Occupations) => void; // 💡 Se cambia any por Occupations
+  onEdit: (row: Occupations) => void; //  Se cambia any por Occupations
   onDelete: (row: Occupations) => void;
 }): React.JSX.Element {
   const {

@@ -24,7 +24,7 @@ export function TasksProgress({ value, sx }: TasksProgressProps): React.JSX.Elem
                  spacing={3}>
             <Stack spacing={1}>
               <Typography color="text.secondary" gutterBottom variant="overline">
-                Task Progress
+                Progreso de Tareas
               </Typography>
               <Typography variant="h4">{value}%</Typography>
             </Stack>

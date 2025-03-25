@@ -23,7 +23,7 @@ export function TotalProfit({ value, sx }: TotalProfitProps): React.JSX.Element 
           <Stack spacing={1}>
             <Typography color="text.secondary"
                         variant="overline">
-              Total Profit
+             Beneficios total
             </Typography>
             <Typography variant="h4">{value}</Typography>
           </Stack>

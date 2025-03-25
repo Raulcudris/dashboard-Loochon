@@ -29,7 +29,7 @@ export function Traffic({ chartSeries, labels, sx }: TrafficProps): React.JSX.El
 
   return (
     <Card sx={sx}>
-      <CardHeader title="Traffic source" />
+      <CardHeader title="Listado de uso" />
       <CardContent>
         <Stack spacing={2}>
           <Chart height={300}

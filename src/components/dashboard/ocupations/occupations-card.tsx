@@ -21,7 +21,9 @@ export function OccupationsCard({ title, description, icon, href = '/' }: Occupa
         }}
       >
         <CardContent>
-          <Stack direction="row" spacing={2} alignItems="center">
+          <Stack direction="row" 
+                 spacing={2} 
+                 alignItems="center">
             {icon}
             <Stack>
               <Typography variant="h6">{title}</Typography>

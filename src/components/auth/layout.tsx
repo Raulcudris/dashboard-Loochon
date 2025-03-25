@@ -64,7 +64,7 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
                               textAlign: 'center'
                             }}
                         variant="h1">
-              Welcome to{' '}
+              Bienvenidos a {' '}
               <Box component="span"
                    sx={{ color: '#15b79e' }}>
                Loochon
@@ -72,7 +72,7 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
             </Typography>
             <Typography align="center"
                         variant="subtitle1">
-              A professional template that comes with ready-to-use MUI components.
+             Encuentra oportunidades laborales informales cerca de ti de manera rápida, segura y sin complicaciones.
             </Typography>
           </Stack>
           <Box sx={{ display: 'flex',
