@@ -1,8 +1,12 @@
-import api from "@/config/apiRequest";
+import axios from "axios";
+import { createApiClient } from "@/config/apiRequest";
+import { services } from "@/config/services";
 import { DataCoordenates, NewCoordenate, EditCoordenate } from "@/interface";
-import axios from "axios"; // Importa Axios para manejar errores correctamente
 
-// Obtener todas las ciudades con parámetros personalizados
+// Crear instancia para microservicio Utility
+const api = createApiClient(services.utility);
+
+// Obtener todas las ciudades
 export const GetAllCity = async (
   currentPage: number = 1,
   pageSize: number = 10,
@@ -17,7 +21,6 @@ export const GetAllCity = async (
         parameter,
         filter,
       },
-      timeout: 30000,
     });
 
     const { rspData, rspPagination } = response.data;
@@ -43,10 +46,7 @@ export const createCity = async (newCoordenates: NewCoordenate): Promise<void> =
       rspData: [newCoordenates],
     };
 
-    console.log("Request Data (createCity):", requestData);
-    const response = await api.post(`/api/utility/city/create`, requestData, {
-      timeout: 30000,
-    });
+    const response = await api.post(`/api/utility/city/create`, requestData);
     console.log("Response Data (createCity):", response.data);
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
@@ -57,18 +57,12 @@ export const createCity = async (newCoordenates: NewCoordenate): Promise<void> =
   }
 };
 
-// Actualizar una ciudad existente
+// Actualizar ciudad
 export const editCity = async (coordenates: EditCoordenate): Promise<void> => {
   try {
-    const requestData = {
-      rspData: [coordenates],
-    };
-
-    console.log("Request Data (editCity):", requestData);
-    const response = await api.put(`/api/utility/city/update`, requestData, {
-      timeout: 30000,
-    });
-    console.log("Response Data (editCity):", response.data);
+    const requestData = { rspData: [coordenates] };
+    const response = await api.put(`/api/utility/city/update`, requestData);
+    //console.log("Response Data (editCity):", response.data);
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       console.error("Error al actualizar la ciudad:", error.response?.data || error.message);
@@ -78,14 +72,11 @@ export const editCity = async (coordenates: EditCoordenate): Promise<void> => {
   }
 };
 
-// Eliminar una ciudad
+// Eliminar ciudad
 export const deleteCity = async (id: number): Promise<void> => {
   try {
     const data = [{ recPKey: id }];
-    console.log("Request Data (deleteCity):", data);
-    await api.patch(`/api/utility/city/delete`, data, {
-      timeout: 30000,
-    });
+    await api.patch(`/api/utility/city/delete`, data);
     console.log("Ciudad eliminada exitosamente:", id);
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
@@ -96,25 +87,11 @@ export const deleteCity = async (id: number): Promise<void> => {
   }
 };
 
-// Cambiar el estado de una ciudad
+// Cambiar estado de ciudad
 export const changeCityStatus = async (id: number, newStatus: string): Promise<DataCoordenates> => {
   try {
-    const data = [
-      {
-        recPKey: id,
-        recEstreg: newStatus,
-      },
-    ];
-
-    console.log("Request Data (changeCityStatus):", data);
-
-    const response = await api.patch<DataCoordenates>(`/api/utility/city/changestatus`, data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      timeout: 30000,
-    });
-
+    const data = [{ recPKey: id, recEstreg: newStatus }];
+    const response = await api.patch<DataCoordenates>(`/api/utility/city/changestatus`, data);
     console.log("Estado de la ciudad cambiado exitosamente:", response.data);
     return response.data;
   } catch (error: unknown) {

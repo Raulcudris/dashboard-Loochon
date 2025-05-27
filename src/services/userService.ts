@@ -1,16 +1,22 @@
-import api from "@/config/apiRequest";
+import { createApiClient } from "@/config/apiRequest";
+import { services } from "@/config/services";
 import { DataUsers, NewUser, User } from "@/interface";
 
-// Obtener todas los usuarios
+// Crear instancia para el microservicio de Usuarios (puerto 6078)
+const api = createApiClient(services.users);
+
+// Obtener todos los usuarios
 export const GetAllUsers = async (
   page: number = 1
 ): Promise<{ users: User[]; total: number }> => {
   try {
-    const response = await api.get<DataUsers>(`/api/users/getall`, { params: { page } });
+    const response = await api.get<DataUsers>(`/api/users/getall`, {
+      params: { page },
+    });
     const { rspData, rspPagination } = response.data;
     return { users: rspData, total: rspPagination.totalResults };
   } catch (error) {
-    console.error('Error al obtener todos los usuarios:', error);
+    console.error("Error al obtener todos los usuarios:", error);
     return { users: [], total: 0 };
   }
 };
@@ -31,7 +37,7 @@ export const createUser = async (newUser: NewUser): Promise<void> => {
       recGeolatReus: 0.0,
       recGeolonReus: 0.0,
     };
-    console.log({ completeUser })
+
     const requestData = {
       rspValue: "",
       rspMessage: "",
@@ -40,16 +46,16 @@ export const createUser = async (newUser: NewUser): Promise<void> => {
       rspData: [completeUser],
     };
 
-    console.log("Request Data:", requestData); // Depuración
-
+    console.log("Request Data:", requestData);
     const response = await api.post(`/api/users/create`, requestData);
-    console.log("Response Data:", response.data); // Depuración de la respuesta
+    console.log("Response Data:", response.data);
   } catch (error) {
+    console.error("Error al crear el usuario:", error);
     throw error;
   }
 };
 
-// Actualizar un usuario existente
+// Actualizar usuario
 export const editUser = async (user: NewUser): Promise<void> => {
   try {
     const requestData = {
@@ -71,14 +77,10 @@ export const editUser = async (user: NewUser): Promise<void> => {
 export const deleteUser = async (id: number): Promise<void> => {
   try {
     const data = [{ recPKey: id }];
-    await api.patch(`/api/users/delete`, {
-      data,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    await api.patch(`/api/users/delete`, data);
+    console.log("Usuario eliminado exitosamente:", id);
   } catch (error) {
-    console.error('Error al eliminar el usuario:', error);
+    console.error("Error al eliminar el usuario:", error);
     throw error;
   }
 };
@@ -89,15 +91,14 @@ export const changeUserStatus = async (id: string): Promise<DataUsers> => {
     const data = [
       {
         recPKey: id,
-        recEstreg: 2, // Ejemplo de nuevo estado
+        recEstreg: 2, // Estado de ejemplo
       },
     ];
     const response = await api.patch<DataUsers>(`/api/users/changestatus`, data);
+    //console.log("Estado del usuario cambiado:", response.data);
     return response.data;
   } catch (error) {
-    console.error('Error al cambiar el estado del usuario:', error);
+    console.error("Error al cambiar el estado del usuario:", error);
     throw error;
   }
 };
-
-

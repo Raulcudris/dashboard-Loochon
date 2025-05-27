@@ -4,13 +4,11 @@ import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Box, Button, Grid, Stack, TextField, IconButton, Modal } from '@mui/material';
 import { EditCoordenate, defaultNewCoordenate, NewCoordenate } from '@/interface';
-import { BaseModal } from './BaseModal'; // Asegúrate de que la ruta de importación sea correcta
-import { useCoordenates } from '@/hooks/use-coordenates'; // Importa el hook
+import { BaseModal } from './BaseModal';
+import { useCoordenates } from '@/hooks/use-coordenates';
 
-// Carga dinámica del mapa
 const MapComponent = dynamic(() => import('./Maps/MapComponent'), { ssr: false });
 
-// Estilo del contenedor del mapa
 const mapContainerStyle = {
   height: '400px',
   width: '100%',
@@ -44,11 +42,11 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
 }) => {
   const [updatedCoordenate, setUpdatedCoordenate] = useState<EditCoordenate>(defaultNewCoordenate);
   const [temporaryCoordenate, setTemporaryCoordenate] = useState<EditCoordenate>(defaultNewCoordenate);
-  const [, setSmallMapCoords] = useState<[number, number]>([0, 0]); // Coordenadas del mapa pequeño
+  const [, setSmallMapCoords] = useState<[number, number]>([0, 0]);
   const [isModified, setIsModified] = useState(false);
   const [largeMapOpen, setLargeMapOpen] = useState<boolean>(false);
+  const [coordError, setCoordError] = useState(false);
 
-  // Usa el hook useCoordenates
   const { editCoordenate, loading } = useCoordenates();
 
   useEffect(() => {
@@ -89,12 +87,12 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
   };
 
   const openLargeMap = () => {
-    setTemporaryCoordenate({ ...updatedCoordenate }); // Guarda un estado temporal
+    setTemporaryCoordenate({ ...updatedCoordenate });
     setLargeMapOpen(true);
   };
 
   const cancelLargeMapChanges = () => {
-    setLargeMapOpen(false); // Solo cerramos el modal sin actualizar nada
+    setLargeMapOpen(false);
   };
 
   const saveLargeMapChanges = () => {
@@ -103,7 +101,6 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
       temporaryCoordenate?.sisGeolonSipr || 0,
     ];
 
-    // Solo actualizamos las coordenadas si se presiona "Guardar"
     setUpdatedCoordenate({ ...temporaryCoordenate });
     setSmallMapCoords(newCoords);
     setLargeMapOpen(false);
@@ -115,7 +112,6 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
         {({ showSnackbar }) => (
           <>
             <Grid container spacing={2}>
-              {/* Columna 1: primera mitad del formulario */}
               <Grid item xs={4}>
                 <TextField
                   label="Código de la Provincia"
@@ -154,7 +150,6 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
                 />
               </Grid>
 
-              {/* Columna 2: segunda mitad del formulario */}
               <Grid item xs={4}>
                 <TextField
                   label="Nombre de la Provincia"
@@ -176,7 +171,8 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
                   fullWidth
                   onChange={(e) => handleInputChange('sisProclaSipr', e.target.value)}
                   sx={{ mb: 2 }}
-                />
+                />                
+                              
                 <TextField
                   label="Latitud"
                   value={updatedCoordenate?.sisGeolatSipr || 0}
@@ -192,8 +188,7 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
                   fullWidth
                   onChange={(e) => handleInputChange('sisGeolonSipr', parseFloat(e.target.value))}
                 />
-              </Grid>
-              {/* Columna 3: mapa */}
+              </Grid>  
               <Grid item xs={4}>
                 <Box sx={mapContainerStyle}>
                   <MapComponent
@@ -212,9 +207,44 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
                     </Button>
                   </Stack>
                 </Box>
-              </Grid>
-            </Grid>
-            <Stack direction="row" spacing={2} sx={{ mt: 2, justifyContent: 'center' }}>
+              </Grid>  
+                <TextField
+                  label="Coordenada completa"
+                  placeholder="Ej: 9.01021070549675, -73.67312283314754"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                  error={coordError}
+                  helperText={coordError ? "Formato inválido. Use: latitud, longitud" : ""}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const coordRegex = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/;
+                    
+                    if (value === "") {
+                      setCoordError(false);
+                      return;
+                    }
+                    
+                    if (coordRegex.test(value)) {
+                      const [lat, lon] = value.split(',').map(coord => parseFloat(coord.trim()));
+                      handleInputChange('sisGeolatSipr', lat);
+                      handleInputChange('sisGeolonSipr', lon);
+                      setCoordError(false);
+                    } else {
+                      setCoordError(true);
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (!coordError && e.target.value) {
+                      const [lat, lon] = e.target.value.split(',').map(coord => parseFloat(coord.trim()));
+                      e.target.value = `${lat}, ${lon}`;
+                    }
+                  }}
+                />      
+              </Grid>         
+               
+              
+            
+            <Stack direction="row" spacing={2} sx={{ mt: 2, justifyContent: 'center' }}>                  
               <Button variant="contained" color="primary" onClick={() => handleSave(showSnackbar)} disabled={!isModified || loading}>
                 {loading ? 'Guardando...' : 'Guardar'}
               </Button>
@@ -226,7 +256,6 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
         )}
       </BaseModal>
 
-      {/* Modal del mapa grande */}
       <Modal open={largeMapOpen} onClose={cancelLargeMapChanges}>
         <Box sx={largeMapModalStyle}>
           <IconButton
@@ -250,8 +279,8 @@ export const EditCoordenatesModal: React.FC<EditCoordenatesModalProps> = ({
                 sisGeolonSipr: newCoords[1],
               }));
             }}
-            isDraggable={true} // Permitir mover el marcador
-            isFullScreen={true} // Estilo de pantalla completa
+            isDraggable={true}
+            isFullScreen={true}
           />
           <Stack direction="row" spacing={2} sx={{ mt: 1, justifyContent: 'flex-end' }}>
             <Button variant="contained" color="primary" onClick={saveLargeMapChanges}>

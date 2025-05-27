@@ -96,7 +96,7 @@ export const EditOccupationsModal: React.FC<{
               variant="contained"
               onClick={async () => {
                 try {
-                  console.log('Iniciando actualización...', updatedOccupation); // Depuración
+                  //console.log('Iniciando actualización...', updatedOccupation); // Depuración
                   await editOccupation(updatedOccupation);
                   showSnackbar('Ocupación actualizada con éxito.', 'success');
                   onSave();
