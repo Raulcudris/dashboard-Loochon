@@ -21,7 +21,13 @@ export default function Page(): React.JSX.Element {
           icon={<occupationsIcons.BriefcaseIcon size={32} />} // Usa el icono como componente
           href={`${paths.dashboard.occupations}/occupations-list`} // Ruta para listar ciudades
         />
-      </Stack>
+        <UserCard
+          title="Categorías ocupacionales"
+          description="Ver y gestionar todas las categorías generales de trabajos disponibles"
+          icon={<occupationsIcons.CategoryIcon size={32} />} // Usa el icono como componente
+          href={`${paths.dashboard.occupations}/category-list`} // Ruta para listar ciudades
+        />
+      </Stack>      
     </Stack>
   );
 }

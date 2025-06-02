@@ -45,6 +45,7 @@ export interface EditCoordenate extends NewCoordenate {
 
 export interface Coordenates extends NewCoordenate {
   sisIdeunikeySipr: number; // Clave obligatoria para identificar la coordenada
+  sisCodproSipr: string;
   sisEstregSipr: string;
   city?: City; // Información de la ciudad
   state?: State;

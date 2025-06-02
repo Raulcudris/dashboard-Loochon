@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Stack, TextField, Grid } from '@mui/material';
-import { BaseModal } from '@/components/dashboard/ocupations/modals/BaseModal';
 import { editOccupation } from '@/services';
 import { EditOccupations, defaultNewOccupations } from '@/interface';
+import { BaseModal } from './BaseModal';
 
 export const EditOccupationsModal: React.FC<{
   open: boolean;

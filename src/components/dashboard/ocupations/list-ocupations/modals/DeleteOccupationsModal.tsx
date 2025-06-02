@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button, Stack, Typography, CircularProgress } from '@mui/material';
-import { BaseModal } from '@/components/dashboard/ocupations/modals/BaseModal';
 import { changeOccupationStatus } from '@/services';
 import { Occupations } from '@/interface';
+import { BaseModal } from './BaseModal';
 
 export const DeleteOccupationsModal: React.FC<{
   open: boolean;

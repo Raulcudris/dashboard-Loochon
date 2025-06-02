@@ -1,17 +1,16 @@
 'use client';
 
 import React from 'react';
-import {  Button, Stack, Typography } from '@mui/material';
-import { BaseModal } from './BaseModal'; // Asegúrate de que la ruta de importación sea correcta
-import { useCoordenates } from '@/hooks/use-coordenates'; // Importa el hook
-import { changeCityStatus } from '@/services'; // Importa el servicio
+import { Button, Stack, Typography } from '@mui/material';
+import { BaseModal } from './BaseModal';
+import { useCoordenates } from '@/hooks/use-coordenates';
 
 interface DeleteCoordenatesModalProps {
-  open: boolean; // Si el modal está abierto
-  onClose: () => void; // Función para cerrar el modal
-  coordenateId: number | null; // ID de la coordenada (asegúrate de pasar un número válido)
-  coordenateName?: string | null; // Nombre opcional de la coordenada
-  onDeleteSuccess: () => void; // Callback para notificar que se eliminó con éxito
+  open: boolean;
+  onClose: () => void;
+  coordenateId: string | null;
+  coordenateName?: string | null;
+  onDeleteSuccess: () => void;
 }
 
 export const DeleteCoordenatesModal: React.FC<DeleteCoordenatesModalProps> = ({
@@ -21,36 +20,47 @@ export const DeleteCoordenatesModal: React.FC<DeleteCoordenatesModalProps> = ({
   coordenateName,
   onDeleteSuccess,
 }) => {
-  const { loading } = useCoordenates();
+  const { loading, permanentlyDeleteCoordenate } = useCoordenates();
 
-  const handleDelete = async (showSnackbar: (message: string, severity: 'success' | 'error') => void) => {
+  const handleDelete = async (showSnackbar: (message: string, type: 'success' | 'error') => void) => {
     if (!coordenateId) {
       showSnackbar('ID de coordenada no válido.', 'error');
       return;
     }
 
     try {
-      // Cambiar el estado de la ciudad (desactivar)
-      await changeCityStatus(coordenateId, "2"); // "2" para desactivar
-      showSnackbar('Coordenada eliminada exitosamente.', 'success');
-      onDeleteSuccess(); // Notificar al padre que se eliminó
-      setTimeout(onClose, 1000); // Espera 1 segundo para cerrar el modal
+      await permanentlyDeleteCoordenate(coordenateId);
+      showSnackbar('Coordenada eliminada permanentemente.', 'success');
+      onDeleteSuccess();
+      setTimeout(onClose, 800);
     } catch (error) {
-      console.error('Error al eliminar la coordenada:', error);
-      showSnackbar('Error al eliminar la coordenada. Por favor, inténtelo de nuevo.', 'error');
+      console.error('Error al eliminar:', error);
+      showSnackbar('No se pudo eliminar la coordenada.', 'error');
     }
   };
 
   return (
-    <BaseModal open={open} onClose={onClose} title="¿Estás seguro de eliminar la coordenada?">
+    <BaseModal
+      open={open}
+      onClose={onClose}
+      title="¿Eliminar coordenada permanentemente?"
+    >
       {({ showSnackbar }) => (
         <>
           <Typography sx={{ mb: 2, textAlign: 'center' }}>
+            Esta acción no se puede deshacer.
+          </Typography>
+          <Typography sx={{ mb: 2, textAlign: 'center' }}>
             {coordenateName || 'Nombre no disponible'}
           </Typography>
-          <Stack direction="row" spacing={2} sx={{ mt: 2, justifyContent: 'center' }}>
-            <Button variant="contained" color="error" onClick={() => handleDelete(showSnackbar)} disabled={loading}>
-              {loading ? 'Eliminando...' : 'Inactivar'}
+          <Stack direction="row" spacing={2} justifyContent="center">
+            <Button
+              variant="contained"
+              color="error"
+              disabled={loading}
+              onClick={() => handleDelete(showSnackbar)}
+            >
+              {loading ? 'Eliminando...' : 'Eliminar'}
             </Button>
             <Button variant="outlined" onClick={onClose}>
               Cancelar

@@ -72,12 +72,13 @@ export const editCity = async (coordenates: EditCoordenate): Promise<void> => {
   }
 };
 
-// Eliminar ciudad
-export const deleteCity = async (id: number): Promise<void> => {
+
+// Eliminar estado de ciudad
+export const deleteCity = async (id: string): Promise<DataCoordenates> => {
   try {
     const data = [{ recPKey: id }];
-    await api.patch(`/api/utility/city/delete`, data);
-    console.log("Ciudad eliminada exitosamente:", id);
+    const response = await api.delete<DataCoordenates>(`/api/utility/city/delete`, { data });
+    return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       console.error("Error al eliminar la ciudad:", error.response?.data || error.message);
@@ -85,14 +86,13 @@ export const deleteCity = async (id: number): Promise<void> => {
     }
     throw error;
   }
-};
+}
 
 // Cambiar estado de ciudad
-export const changeCityStatus = async (id: number, newStatus: string): Promise<DataCoordenates> => {
+export const changeCityStatus = async (id: string, newStatus: string): Promise<DataCoordenates> => {
   try {
     const data = [{ recPKey: id, recEstreg: newStatus }];
-    const response = await api.patch<DataCoordenates>(`/api/utility/city/changestatus`, data);
-    console.log("Estado de la ciudad cambiado exitosamente:", response.data);
+    const response = await api.patch<DataCoordenates>(`api/utility/city/changestatus`, data);
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {

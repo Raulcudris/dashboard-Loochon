@@ -16,9 +16,12 @@ export const paths = {
     // Coordenadas y ubicaciones
     coordenates: '/dashboard/coordenates',
     coordenatesList: '/dashboard/coordenates/coordenates-list',
+    
     // Ocupaciones y servicios    
     occupations: '/dashboard/occupations',
-    occupationsList: '/dashboard/occupations/occupations-list',
+    listOccupationsServices: '/dashboard/occupations/occupations-list',
+    listCategoryServices: '/dashboard/occupations/category-list',
+
     //integrations: '/dashboard/integrations',
     settings: '/dashboard/settings',
     //reportedOffers: '/dashboard/reportedOffers',

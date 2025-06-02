@@ -65,7 +65,7 @@ export default function Page(): React.JSX.Element {
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">Ocupaciones y servicios</Typography>
+          <Typography variant="h4">Categorías ocupacionales</Typography>
         </Stack>
         <div>
           <Button

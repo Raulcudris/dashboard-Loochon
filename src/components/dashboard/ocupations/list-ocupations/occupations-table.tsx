@@ -14,9 +14,9 @@ import {
   Typography,
 } from '@mui/material';
 import { OccupationsTableProps, Occupations } from '@/interface'; // Importa el tipo Occupations
+import { useOccupations } from '@/hooks/use-occupations';
 import { EditOccupationsModal } from './modals/EditOccupationsModal';
 import { DeleteOccupationsModal } from './modals/DeleteOccupationsModal';
-import { useOccupations } from '@/hooks/use-occupations';
 
 export function OccupationsTable({
   rows,

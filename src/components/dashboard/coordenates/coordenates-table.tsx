@@ -1,4 +1,5 @@
 'use client';
+
 import React from 'react';
 import {
   Box,
@@ -17,7 +18,8 @@ import {
 import { CoordenatesTableProps } from '@/interface';
 import { EditCoordenatesModal } from './modals/EditCoordenatesModal';
 import { DeleteCoordenatesModal } from './modals/DeleteCoordenatesModal';
-import { useCoordenates } from '@/hooks/index'; 
+import { ToggleCoordenatesModal } from './modals/ToggleCoordenatesModal';
+import { useCoordenates } from '@/hooks/index';
 
 export function CoordenatesTable({
   rows,
@@ -30,12 +32,16 @@ export function CoordenatesTable({
 }: CoordenatesTableProps & { onRefresh: () => void }): React.JSX.Element {
   const {
     isEditModalOpen,
-    isDeleteModalOpen,
     selectedCoordenates,
     handleEditClick,
-    handleDeleteClick,
     handleCloseModals,
   } = useCoordenates();
+
+  const [isToggleModalOpen, setIsToggleModalOpen] = React.useState(false);
+  const [toggleTarget, setToggleTarget] = React.useState<typeof rows[0] | null>(null);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+  const [deleteTarget, setDeleteTarget] = React.useState<typeof rows[0] | null>(null);
 
   const estadoMap: Record<string, { label: string; color: string }> = {
     1: { label: 'Activo', color: 'green' },
@@ -86,30 +92,49 @@ export function CoordenatesTable({
                   <TableCell align="center">{row.city?.sisIdemunSimu}</TableCell>
                   <TableCell align="center">{row.city?.sisNombreSimu}</TableCell>
                   <TableCell align="center">
-                      <Typography variant="body2"
-                                  sx={{
-                                     color: estadoMap[row.sisEstregSipr]?.color || 'gray',
-                                     fontWeight: 'bold',
-                                     }} >
-                                        {estadoMap[row.sisEstregSipr]?.label || 'Inactivo'}
-                                      </Typography>
-                  </TableCell>                  
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: estadoMap[row.sisEstregSipr]?.color || 'gray',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {estadoMap[row.sisEstregSipr]?.label || 'Inactivo'}
+                    </Typography>
+                  </TableCell>
                   <TableCell align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
                       <Button
                         variant="outlined"
                         onClick={() => handleEditClick(row)}
+                        disabled={estadoMap[row.sisEstregSipr]?.label === 'Inactivo'}
                       >
                         Modificar
                       </Button>
+
                       <Button
                         variant="outlined"
-                        color="error"
-                        onClick={() => handleDeleteClick(row)}
-                        disabled={estadoMap[row.sisEstregSipr]?.label === 'Eliminada'}
+                        color={estadoMap[row.sisEstregSipr]?.label === 'Activo' ? 'error' : 'success'}
+                        onClick={() => {
+                          setToggleTarget(row);
+                          setIsToggleModalOpen(true);
+                        }}
                       >
-                        Inactivar
+                        {estadoMap[row.sisEstregSipr]?.label === 'Activo' ? 'Inactivar' : 'Activar'}
                       </Button>
+
+                      {estadoMap[row.sisEstregSipr]?.label === 'Inactivo' && (
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={() => {
+                            setDeleteTarget(row);
+                            setIsDeleteModalOpen(true);
+                          }}
+                        >
+                          Eliminar
+                        </Button>
+                      )}
                     </Stack>
                   </TableCell>
                 </TableRow>
@@ -130,7 +155,7 @@ export function CoordenatesTable({
         count={count}
         page={page}
         rowsPerPage={rowsPerPage}
-        onPageChange={(_event, newPage) => onPageChange(_event, newPage)} 
+        onPageChange={(_event, newPage) => onPageChange(_event, newPage)}
         labelRowsPerPage="Ciudades y municipios por página"
         onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={[5, 10, 25]}
@@ -143,13 +168,30 @@ export function CoordenatesTable({
         coordenate={selectedCoordenates}
         onSave={onRefresh}
       />
-      {/* Modal de eliminación */}
+
+      {/* Modal de eliminación permanente */}
       <DeleteCoordenatesModal
         open={isDeleteModalOpen}
-        onClose={handleCloseModals}
-        coordenateId={selectedCoordenates?.sisIdeunikeySipr || null}
-        coordenateName={selectedCoordenates?.sisNombreSipr}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setDeleteTarget(null);
+        }}
+        coordenateId={deleteTarget?.sisCodproSipr || null}
+        coordenateName={deleteTarget?.sisNombreSipr}
         onDeleteSuccess={onRefresh}
+      />
+
+      {/* Modal de Activar/Inactivar */}
+      <ToggleCoordenatesModal
+        open={isToggleModalOpen}
+        onClose={() => {
+          setIsToggleModalOpen(false);
+          setToggleTarget(null);
+        }}
+        coordenateId={toggleTarget?.sisCodproSipr || null}
+        coordenateName={toggleTarget?.sisNombreSipr}
+        isActive={toggleTarget?.sisEstregSipr === '1'}
+        onToggleSuccess={onRefresh}
       />
     </Card>
   );
