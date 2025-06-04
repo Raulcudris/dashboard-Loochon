@@ -10,6 +10,7 @@ import { CoordenatesTable } from '@/components/dashboard/coordenates/coordenates
 import { GetAllCity } from '@/services/index';
 import { NewCoordenate } from '@/interface/index';
 import { AddCoordenatesModal } from '@/components/dashboard/coordenates/modals/AddCoordenatesModal';
+import { AddCoordenatesModalV2 } from '@/components/dashboard/coordenates/modals/AddCoordenatesModalV2';
 
 export default function Page(): React.JSX.Element {
   const [coordenates, setCoordenates] = useState<NewCoordenate[]>([]);
@@ -72,7 +73,7 @@ export default function Page(): React.JSX.Element {
       />
 
       {/* Modal */}
-      <AddCoordenatesModal
+      <AddCoordenatesModalV2
         open={openAddModal}
         onClose={() => setOpenAddModal(false)}
         onCoordenateAdded={fetchData}

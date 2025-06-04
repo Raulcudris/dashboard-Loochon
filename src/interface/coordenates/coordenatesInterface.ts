@@ -1,21 +1,27 @@
+// ==============================
+// INTERFACES PRINCIPALES
+// ==============================
+
 // **Interfaz para una coordenada** (estructura esperada de la API)
 export interface NewCoordenate {
-  sisIdeunikeySipr: number ; //Clave primaria única
-  sisCodproSipr: string; // Código de la provincia
-  sisCodmunSimu: string; // Código del municipio
-  sisIdedptSidp: string; // ID del departamento
-  sisCodpaiSipa: string; // Código del país
-  sisNombreSipr: string; // Nombre de la provincia
-  sisCodposSipr: string; // Código postal
-  sisCapitaSipr: string; // Indicador de capital
-  sisProclaSipr: string; // Clase de la provincia
-  sisGeolatSipr: number; // Latitud geográfica
-  sisGeolonSipr: number; // Longitud geográfica
-  sisCountaRkey: number; // Contador A
-  sisEstregSipr: string; // Estado de registro
-  sisCheckprossSipr: string; // Estado del proceso
-  state?: State; // Información del estado (departamento)
-  city?: City; // Información de la ciudad (municipio)
+  sisIdeunikeySipr: number; // Clave primaria única
+  sisCodproSipr: string;    // Código de la provincia
+  sisCodmunSimu: string;    // Código del municipio
+  sisIdedptSidp: string;    // ID del departamento
+  sisCodpaiSipa: string;    // Código del país
+  sisNombreSipr: string;    // Nombre de la provincia
+  sisCodposSipr: string;    // Código postal
+  sisCapitaSipr: string;    // Indicador de capital
+  sisProclaSipr: string;    // Clase de la provincia
+  sisGeolatSipr: number;    // Latitud geográfica
+  sisGeolonSipr: number;    // Longitud geográfica
+  sisCountaRkey: number;    // Contador A
+  sisEstregSipr: string;    // Estado de registro
+  sisCheckprossSipr: string;// Estado del proceso
+
+  country?: Country;        // Objeto país
+  state?: State;            // Objeto departamento
+  city?: City;              // Objeto ciudad
 }
 
 // Valores predeterminados para una nueva coordenada
@@ -24,7 +30,7 @@ export const defaultNewCoordenate: NewCoordenate = {
   sisCodproSipr: '',
   sisCodmunSimu: '',
   sisIdedptSidp: '',
-  sisCodpaiSipa: '170', // Por defecto, Colombia
+  sisCodpaiSipa: '170', // Por defecto: Colombia
   sisNombreSipr: '',
   sisCodposSipr: 'NA',
   sisCapitaSipr: '0',
@@ -32,86 +38,103 @@ export const defaultNewCoordenate: NewCoordenate = {
   sisGeolatSipr: 0.0,
   sisGeolonSipr: 0.0,
   sisCountaRkey: 0,
-  sisEstregSipr: "1", // Activo
+  sisEstregSipr: "1",
   sisCheckprossSipr: 'OK',
-  city: { sisCodmunSimu: '', sisIdemunSimu: '', sisNombreSimu: '' },
+  country: { sisCodpaiSipa: '170', sisNombreSipa: 'Colombia' },
   state: { sisIdedptSidp: '', sisCoddptSidp: '', sisNombreSidp: '' },
+  city: { sisCodmunSimu: '', sisIdemunSimu: '', sisNombreSimu: '' },
 };
 
-// **Interfaz para editar una coordenada** (parcial de `NewCoordenate`)
+// ==============================
+// VARIANTES DE COORDENADAS
+// ==============================
+
+// **Interfaz para editar una coordenada**
 export interface EditCoordenate extends NewCoordenate {
-  sisIdeunikeySipr: number; // Clave obligatoria para identificar la coordenada
+  sisIdeunikeySipr: number;
 }
 
 export interface Coordenates extends NewCoordenate {
-  sisIdeunikeySipr: number; // Clave obligatoria para identificar la coordenada
+  sisIdeunikeySipr: number;
   sisCodproSipr: string;
   sisEstregSipr: string;
-  city?: City; // Información de la ciudad
-  state?: State;
 }
 
-// **Información de un estado (departamento)**
+// ==============================
+// ENTIDADES RELACIONADAS
+// ==============================
+
+// **Información de un país**
+export interface Country {
+  sisCodpaiSipa: string;   // Código del país (ej: '170')
+  sisNombreSipa: string;   // Nombre del país
+}
+
+// **Información de un departamento**
 export interface State {
-  sisIdedptSidp: string; // ID del departamento
-  sisCoddptSidp: string; // Código del departamento
-  sisNombreSidp: string; // Nombre del departamento
+  sisIdedptSidp: string;   // ID del departamento
+  sisCoddptSidp: string;   // Código del departamento
+  sisNombreSidp: string;   // Nombre del departamento
 }
 
-// **Información de una ciudad (municipio)**
-interface City {
-  sisCodmunSimu: string; // Código del municipio
-  sisIdemunSimu: string; // ID del municipio
-  sisNombreSimu: string; // Nombre del municipio
+// **Información de una ciudad**
+export interface City {
+  sisIdemunSimu: string;   // ID único del municipio
+  sisCodmunSimu: string;   // Código visible o de integración
+  sisNombreSimu: string;   // Nombre del municipio
+
 }
 
-// **Estructura de respuesta de datos de la API**
+// ==============================
+// RESPUESTAS DE API
+// ==============================
+
 export interface CoordenatesResponse {
-  rspValue: string; // Valor de respuesta
-  rspMessage: string; // Mensaje de respuesta
-  rspParentKey: string; // Clave principal
-  rspAppKey: string; // Clave de la aplicación
-  rspPagination: RspPaginationCoordenates; // Información de paginación
-  rspData: NewCoordenate[]; // Lista de coordenadas
+  rspValue: string;
+  rspMessage: string;
+  rspParentKey: string;
+  rspAppKey: string;
+  rspPagination: RspPaginationCoordenates;
+  rspData: NewCoordenate[];
 }
 
-// **Información de paginación dentro de la respuesta de la API**
-export interface RspPaginationCoordenates {
-  currentPage: number; // Página actual
-  totalPageSize: number; // Tamaño total de la página
-  totalResults: number; // Total de resultados
-  totalPages: number; // Total de páginas
-  hasNextPage: boolean; // Indicador de si hay más páginas
-  hasPreviousPage: boolean; // Indicador de si hay páginas previas
-  nextPageUrl: string; // URL de la siguiente página
-  previousPageUrl: string; // URL de la página anterior
-}
-
-// **Estructura de respuesta de datos para coordenadas**
 export interface DataCoordenates {
-  rspValue: string; // Valor de respuesta
-  rspMessage: string; // Mensaje de respuesta
-  rspParentKey: string; // Clave principal
-  rspAppKey: string; // Clave de la aplicación
-  rspPagination: RspPaginationCoordenates; // Información de paginación
-  rspData: Coordenates[]; // Lista de coordenadas
+  rspValue: string;
+  rspMessage: string;
+  rspParentKey: string;
+  rspAppKey: string;
+  rspPagination: RspPaginationCoordenates;
+  rspData: Coordenates[];
 }
 
-// **Props para el componente `CoordenatesTable`**
+export interface RspPaginationCoordenates {
+  currentPage: number;
+  totalPageSize: number;
+  totalResults: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  nextPageUrl: string;
+  previousPageUrl: string;
+}
+
+// ==============================
+// PROPS DE COMPONENTES
+// ==============================
+
 export interface CoordenatesTableProps {
-  rows: Coordenates[]; // Filas de coordenadas
-  count: number; // Número total de filas
-  page: number; // Página actual
-  rowsPerPage: number; // Filas por página
-  onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void; // Cambio de página
-  onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void; // Cambio en la cantidad de filas por página
-  onRefresh: () => void; // Método para refrescar los datos
+  rows: Coordenates[];
+  count: number;
+  page: number;
+  rowsPerPage: number;
+  onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
+  onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onRefresh: () => void;
 }
 
-// **Props para el componente `EditCoordenatesModal`**
 export interface CoordenateEditModalProps {
-  open: boolean; // Estado del modal (abierto/cerrado)
-  onClose: () => void; // Método para cerrar el modal
-  coordenate: EditCoordenate | null; // Coordenada seleccionada para editar
-  onSave: () => void; // Método para guardar cambios y refrescar la lista
+  open: boolean;
+  onClose: () => void;
+  coordenate: EditCoordenate | null;
+  onSave: () => void;
 }

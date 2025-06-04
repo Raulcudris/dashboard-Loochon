@@ -57,7 +57,7 @@ export interface NewUser {
   }
   
   // **Información de una ciudad**
-  export interface City {
+   interface City {
     sisCodproSipr: string; // Código de provincia
     sisNombreSipr: string; // Nombre de la provincia
     sisProclaSipr: string; // Clase de provincia
