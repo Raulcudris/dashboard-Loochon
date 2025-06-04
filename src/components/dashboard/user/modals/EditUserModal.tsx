@@ -2,8 +2,8 @@ import { Grid, Stack } from '@mui/material';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import React, { useEffect, useState } from 'react';
-import { editUser } from '../../../../services/userService';
-import { defaultNewUser, EditUser, NewUser } from '@/interface/userInterface';
+import { editUser } from '../../../../services/user/userService';
+import { defaultNewUser, EditUser, NewUser } from '@/interface/user/userInterface';
 import { BaseModal } from './BaseModal'; // Importar BaseModal
 
 interface EditUserModalProps {

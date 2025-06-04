@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Stack, TextField, Grid } from '@mui/material';
-import { createUser } from '../../../../services/userService';
-import { defaultNewUser, NewUser } from '@/interface/userInterface';
+import { createUser } from '../../../../services/user/userService';
+import { defaultNewUser, NewUser } from '@/interface/user/userInterface';
 import { BaseModal } from './BaseModal'; // Asegúrate de importar el BaseModal
 
 interface AddUserModalProps {

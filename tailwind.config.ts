@@ -1,4 +1,4 @@
-import { NewCoordenate } from "@/interface/coordenatesInterface";
+import { NewCoordenate } from "@/interface/coordenates/coordenatesInterface";
 import type { Config } from "tailwindcss";
 
 const config: Config = {

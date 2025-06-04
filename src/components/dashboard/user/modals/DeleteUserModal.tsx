@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Stack, Typography } from '@mui/material';
-import { changeUserStatus } from '../../../../services/userService';
+import { changeUserStatus } from '../../../../services/user/userService';
 import { BaseModal } from './BaseModal'; // Importar BaseModal
 import { User } from '@/interface'; // Importa el tipo User desde tu archivo de interfaces
 
