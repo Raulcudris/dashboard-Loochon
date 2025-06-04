@@ -1,8 +1,16 @@
+'use client';
+
 import React, { useState } from 'react';
-import { Button, Stack, TextField, Grid } from '@mui/material';
-import { createOccupation } from '@/services';
+import {
+  Button,
+  Stack,
+  TextField,
+  Grid,
+  MenuItem,
+} from '@mui/material';
 import { NewOccupations, defaultNewOccupations } from '@/interface';
 import { BaseModal } from './BaseModal';
+import { useOccupations } from '@/hooks/use-occupations';
 
 export const AddOccupationsModal: React.FC<{
   open: boolean;
@@ -10,6 +18,7 @@ export const AddOccupationsModal: React.FC<{
   onOccupationAdded: () => void;
 }> = ({ open, onClose, onOccupationAdded }) => {
   const [newOccupation, setNewOccupation] = useState<NewOccupations>(defaultNewOccupations);
+  const { createNewOccupation, loading } = useOccupations();
 
   const handleInputChange = (field: keyof NewOccupations, value: string | number) => {
     setNewOccupation((prev) => ({
@@ -17,6 +26,13 @@ export const AddOccupationsModal: React.FC<{
       [field]: value,
     }));
   };
+
+  const resetForm = () => setNewOccupation(defaultNewOccupations);
+
+  const isValid =
+    newOccupation.recIdentifikeyRcws.trim() &&
+    newOccupation.recIdentifikeyRcwk.trim() &&
+    newOccupation.recTitleworkRcws.trim();
 
   return (
     <BaseModal open={open} onClose={onClose} title="Añadir Nueva Ocupación">
@@ -64,50 +80,52 @@ export const AddOccupationsModal: React.FC<{
                 type="number"
                 fullWidth
                 onChange={(e) =>
-                  handleInputChange('recOrdviewkeyRcws', e.target.value ? parseInt(e.target.value, 10) : 0)
+                  handleInputChange('recOrdviewkeyRcws', parseInt(e.target.value, 10) || 0)
                 }
               />
             </Grid>
             <Grid item xs={6}>
               <TextField
-                label="Estado (1 = Activo, 0 = Inactivo)"
+                label="Estado"
                 value={newOccupation.recStatusregiRcws}
                 select
                 fullWidth
-                onChange={(e) => handleInputChange('recStatusregiRcws', Number(e.target.value))}
-                SelectProps={{
-                  native: true,
-                }}
+                onChange={(e) =>
+                  handleInputChange('recStatusregiRcws', e.target.value as '1' | '2')
+                }
               >
-                <option value={0}>Inactivo</option>
-                <option value={1}>Activo</option>
+                <MenuItem value="1">Activo</MenuItem>
+                <MenuItem value="2">Inactivo</MenuItem>
               </TextField>
             </Grid>
           </Grid>
+
           <Stack direction="row" spacing={2} sx={{ mt: 3, justifyContent: 'center' }}>
             <Button
               variant="contained"
+              disabled={!isValid || loading}
               onClick={async () => {
-                if (!newOccupation.recTitleworkRcws.trim()) {
-                  showSnackbar('Por favor, complete el campo de título.', 'error');
-                  return;
-                }
-
-                try {
-                  await createOccupation(newOccupation);
+                const success = await createNewOccupation(newOccupation);
+                if (success) {
                   showSnackbar('Ocupación creada con éxito.', 'success');
                   onOccupationAdded();
                   onClose();
-                  setNewOccupation(defaultNewOccupations);
-                } catch (error: unknown) {
-                  console.error('Error al crear la ocupación:', error);
-                  showSnackbar('Error al crear la ocupación. Por favor, inténtelo de nuevo.', 'error');
+                  resetForm();
+                } else {
+                  showSnackbar('Error al crear la ocupación.', 'error');
                 }
               }}
             >
               Guardar
             </Button>
-            <Button variant="outlined" onClick={onClose}>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                resetForm();
+                onClose();
+              }}
+              disabled={loading}
+            >
               Cancelar
             </Button>
           </Stack>

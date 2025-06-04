@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import {
   Box,
@@ -13,10 +15,12 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { OccupationsTableProps, Occupations } from '@/interface'; // Importa el tipo Occupations
+
+import { OccupationsTableProps, Occupations } from '@/interface';
 import { useOccupations } from '@/hooks/use-occupations';
 import { EditOccupationsModal } from './modals/EditOccupationsModal';
 import { DeleteOccupationsModal } from './modals/DeleteOccupationsModal';
+import { ToggleOccupationsModal } from './modals/ToggleOccupationsModal';
 
 export function OccupationsTable({
   rows,
@@ -26,11 +30,7 @@ export function OccupationsTable({
   onPageChange,
   onRowsPerPageChange,
   onRefresh,
-}: OccupationsTableProps & {
-  onRefresh: () => void;
-  onEdit: (row: Occupations) => void; //  Se cambia any por Occupations
-  onDelete: (row: Occupations) => void;
-}): React.JSX.Element {
+}: OccupationsTableProps): React.JSX.Element {
   const {
     openEditModal,
     openDeleteModal,
@@ -40,109 +40,151 @@ export function OccupationsTable({
     handleCloseModals,
   } = useOccupations();
 
-  // Se tipa estadoMap para que acepte number como índice
-  const estadoMap: Record<number, { label: string; color: string }> = {
-    1: { label: 'Activo', color: 'green' },
-    2: { label: 'Inactivo', color: 'orange' },
-    3: { label: 'Eliminada', color: 'red' },
+  const [isToggleModalOpen, setIsToggleModalOpen] = React.useState(false);
+  const [toggleTarget, setToggleTarget] = React.useState<Occupations | null>(null);
+
+  const estadoMap: Record<string, { label: string; color: string }> = {
+    '1': { label: 'Activo', color: 'green' },
+    '2': { label: 'Inactivo', color: 'orange' },
+    '3': { label: 'Eliminada', color: 'red' },
   };
 
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
-        <Table sx={{ minWidth: '800px' }}>
+        <Table sx={{ minWidth: 800 }}>
           <TableHead>
             <TableRow>
               <TableCell align="center">Clave</TableCell>
               <TableCell align="center">Categoría</TableCell>
               <TableCell align="center">Título</TableCell>
               <TableCell align="center">Descripción</TableCell>
-              <TableCell align="center">Orden de visualización</TableCell>
+              <TableCell align="center">Orden</TableCell>
               <TableCell align="center">Estado</TableCell>
               <TableCell align="center">Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.length > 0 ? (
-              rows.map((row: Occupations, index: number) => ( // 💡 Se asegura que row sea de tipo Occupations
-                <TableRow key={index} hover>
-                  <TableCell align="center">{row.recIdentifikeyRcws}</TableCell>
-                  <TableCell align="center">{row.recIdentifikeyRcwk}</TableCell>
-                  <TableCell align="center">{row.recTitleworkRcws}</TableCell>
-                  <TableCell align="center">{row.recDescrworkRcws}</TableCell>
-                  <TableCell align="center">{row.recOrdviewkeyRcws}</TableCell>
-                  <TableCell align="center">
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: estadoMap[Number(row.recStatusregiRcws)]?.color || 'gray',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    {estadoMap[Number(row.recStatusregiRcws)]?.label || 'Inactivo'}
-                  </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Stack direction="row" spacing={1} justifyContent="center">
-                      <Button
-                        variant="outlined"
-                        onClick={() => handleEditClick(row)}
+              rows.map((row) => {
+                const status = estadoMap[row.recStatusregiRcws] ?? {
+                  label: 'Desconocido',
+                  color: 'gray',
+                };
+
+                const isEliminada = status.label === 'Eliminada';
+                const isActivo = row.recStatusregiRcws === '1';
+                const isInactivo = row.recStatusregiRcws === '2';
+
+                return (
+                  <TableRow key={row.recIdentifikeyRcws} hover>
+                    <TableCell align="center">{row.recIdentifikeyRcws}</TableCell>
+                    <TableCell align="center">{row.recIdentifikeyRcwk}</TableCell>
+                    <TableCell align="center">{row.recTitleworkRcws}</TableCell>
+                    <TableCell align="center">{row.recDescrworkRcws}</TableCell>
+                    <TableCell align="center">{row.recOrdviewkeyRcws}</TableCell>
+                    <TableCell align="center">
+                      <Typography
+                        variant="body2"
+                        sx={{ color: status.color, fontWeight: 'bold' }}
                       >
-                        Modificar
-                      </Button>
-                      <Button variant="outlined"
-                              color="error"
-                              onClick={() => handleDeleteClick(row)}
-                              disabled={
-                                estadoMap[Number(row.recStatusregiRcws)]?.label === 'Inactivo' ||
-                                estadoMap[Number(row.recStatusregiRcws)]?.label === 'Eliminada'
-                             }
-                    >
-                      Inactivar
-                    </Button>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              ))
+                        {status.label}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Stack direction="row" spacing={1} justifyContent="center">
+                        <Button
+                          variant="outlined"
+                          onClick={() => handleEditClick(row)}
+                          disabled={isEliminada}
+                        >
+                          Modificar
+                        </Button>
+
+                        <Button
+                          variant="outlined"
+                          color={isActivo ? 'error' : 'success'}
+                          onClick={() => {
+                            setToggleTarget(row);
+                            setIsToggleModalOpen(true);
+                          }}
+                          disabled={isEliminada}
+                        >
+                          {isActivo ? 'Inactivar' : 'Activar'}
+                        </Button>
+
+                        {isInactivo && (
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={() => handleDeleteClick(row)}
+                          >
+                            Eliminar
+                          </Button>
+                        )}
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell colSpan={7} align="center">
-                  <Typography variant="body2">No hay datos disponibles.</Typography>
+                  <Typography variant="body2">No hay ocupaciones registradas.</Typography>
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </Box>
+
       <Divider />
+
+      {/* Paginación */}
       <TablePagination
         component="div"
         count={count}
         page={page}
         rowsPerPage={rowsPerPage}
         onPageChange={onPageChange}
-        labelRowsPerPage="Filas por página"
         onRowsPerPageChange={onRowsPerPageChange}
+        labelRowsPerPage="Filas por página"
         rowsPerPageOptions={[5, 10, 25]}
       />
 
-      {/* Modal de edición */}
+      {/* Modales */}
       {selectedOccupation && (
-        <EditOccupationsModal
-          open={openEditModal}
-          onClose={handleCloseModals}
-          occupation={selectedOccupation}
-          onSave={onRefresh}
-        />
+        <>
+          <EditOccupationsModal
+            open={openEditModal}
+            onClose={handleCloseModals}
+            occupation={selectedOccupation}
+            onSave={onRefresh}
+          />
+          <DeleteOccupationsModal
+            open={openDeleteModal}
+            onClose={handleCloseModals}
+            occupation={selectedOccupation}
+            onDeleteSuccess={onRefresh}
+          />
+        </>
       )}
 
-      {/* Modal de eliminación */}
-      {selectedOccupation && (
-        <DeleteOccupationsModal
-          open={openDeleteModal}
-          onClose={handleCloseModals}
-          occupation={selectedOccupation}
-          onDeleteSuccess={onRefresh}
+      {toggleTarget && (
+        <ToggleOccupationsModal
+          open={isToggleModalOpen}
+          onClose={() => {
+            setToggleTarget(null);
+            setIsToggleModalOpen(false);
+          }}
+          occupationId={toggleTarget.recPrimarykeyRcws}
+          occupationTitle={toggleTarget.recTitleworkRcws}
+          isActive={toggleTarget.recStatusregiRcws === '1'}
+          onToggleSuccess={() => {
+            onRefresh();
+            setToggleTarget(null);
+            setIsToggleModalOpen(false);
+          }}
         />
       )}
     </Card>

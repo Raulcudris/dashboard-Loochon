@@ -1,8 +1,16 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
-import { Button, Stack, TextField, Grid } from '@mui/material';
-import { editOccupation } from '@/services';
+import {
+  Button,
+  Stack,
+  TextField,
+  Grid,
+  MenuItem,
+} from '@mui/material';
 import { EditOccupations, defaultNewOccupations } from '@/interface';
 import { BaseModal } from './BaseModal';
+import { useOccupations } from '@/hooks/use-occupations';
 
 export const EditOccupationsModal: React.FC<{
   open: boolean;
@@ -10,6 +18,8 @@ export const EditOccupationsModal: React.FC<{
   occupation: EditOccupations | null;
   onSave: () => void;
 }> = ({ open, onClose, occupation, onSave }) => {
+  const { editOccupationData, loading } = useOccupations();
+
   const [updatedOccupation, setUpdatedOccupation] = useState<EditOccupations>(defaultNewOccupations);
 
   useEffect(() => {
@@ -27,6 +37,8 @@ export const EditOccupationsModal: React.FC<{
     }));
   };
 
+  const isValid = updatedOccupation.recIdentifikeyRcws && updatedOccupation.recTitleworkRcws;
+
   return (
     <BaseModal open={open} onClose={onClose} title="Editar Ocupación">
       {({ showSnackbar }) => (
@@ -35,7 +47,7 @@ export const EditOccupationsModal: React.FC<{
             <Grid item xs={6}>
               <TextField
                 label="Clave"
-                value={updatedOccupation.recIdentifikeyRcws || ''}
+                value={updatedOccupation.recIdentifikeyRcws}
                 fullWidth
                 onChange={(e) => handleInputChange('recIdentifikeyRcws', e.target.value)}
               />
@@ -43,7 +55,7 @@ export const EditOccupationsModal: React.FC<{
             <Grid item xs={6}>
               <TextField
                 label="Categoría"
-                value={updatedOccupation.recIdentifikeyRcwk || ''}
+                value={updatedOccupation.recIdentifikeyRcwk}
                 fullWidth
                 onChange={(e) => handleInputChange('recIdentifikeyRcwk', e.target.value)}
               />
@@ -51,7 +63,7 @@ export const EditOccupationsModal: React.FC<{
             <Grid item xs={12}>
               <TextField
                 label="Título"
-                value={updatedOccupation.recTitleworkRcws || ''}
+                value={updatedOccupation.recTitleworkRcws}
                 fullWidth
                 onChange={(e) => handleInputChange('recTitleworkRcws', e.target.value)}
               />
@@ -59,7 +71,7 @@ export const EditOccupationsModal: React.FC<{
             <Grid item xs={12}>
               <TextField
                 label="Descripción"
-                value={updatedOccupation.recDescrworkRcws || ''}
+                value={updatedOccupation.recDescrworkRcws}
                 fullWidth
                 multiline
                 rows={3}
@@ -69,43 +81,38 @@ export const EditOccupationsModal: React.FC<{
             <Grid item xs={6}>
               <TextField
                 label="Orden de Visualización"
-                value={updatedOccupation.recOrdviewkeyRcws || 0}
-                fullWidth
+                value={updatedOccupation.recOrdviewkeyRcws}
                 type="number"
+                fullWidth
                 onChange={(e) => handleInputChange('recOrdviewkeyRcws', Number(e.target.value))}
               />
             </Grid>
             <Grid item xs={6}>
               <TextField
-                label="Estado (1 = Activo, 0 = Inactivo)"
-                value={updatedOccupation.recStatusregiRcws || 0}
-                select
+                label="Estado"
+                value={updatedOccupation.recStatusregiRcws}
                 fullWidth
-                onChange={(e) => handleInputChange('recStatusregiRcws', Number(e.target.value))}
-                SelectProps={{
-                  native: true,
-                }}
+                select
+                onChange={(e) => handleInputChange('recStatusregiRcws', e.target.value as '1' | '2')}
               >
-                <option value={0}>Inactivo</option>
-                <option value={1}>Activo</option>
+                <MenuItem value="1">Activo</MenuItem>
+                <MenuItem value="2">Inactivo</MenuItem>
               </TextField>
             </Grid>
           </Grid>
+
           <Stack direction="row" spacing={2} sx={{ mt: 3, justifyContent: 'center' }}>
             <Button
               variant="contained"
+              disabled={!isValid || loading}
               onClick={async () => {
-                try {
-                  //console.log('Iniciando actualización...', updatedOccupation); // Depuración
-                  await editOccupation(updatedOccupation);
+                const success = await editOccupationData(updatedOccupation);
+                if (success) {
                   showSnackbar('Ocupación actualizada con éxito.', 'success');
                   onSave();
-                  setTimeout(() => {
-                    onClose(); // Cierra el modal después de 2 segundos
-                  }, 2000);
-                } catch (error: unknown) {
-                  console.error('Error al actualizar la ocupación:', error);
-                  showSnackbar('Error al actualizar la ocupación. Por favor, inténtelo de nuevo.', 'error');
+                  setTimeout(() => onClose(), 1000);
+                } else {
+                  showSnackbar('Error al actualizar la ocupación.', 'error');
                 }
               }}
             >

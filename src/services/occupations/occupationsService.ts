@@ -63,10 +63,10 @@ export const editOccupation = async (occupation: NewOccupations): Promise<void> 
 };
 
 // Eliminar una ocupación
-export const deleteOccupation = async (id: string | number): Promise<void> => {
+export const deleteOccupation = async (id: number): Promise<void> => {
   try {
     const data = [{ recPKey: id }];
-    await api.patch(`/api/utility/services/delete`, data);
+    await api.delete(`/api/utility/services/delete`, {data});
     //console.log("Ocupación eliminada exitosamente:", id);
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
@@ -77,12 +77,14 @@ export const deleteOccupation = async (id: string | number): Promise<void> => {
   }
 };
 
-// Cambiar el estado de una ocupación
-export const changeOccupationStatus = async (id: number): Promise<DataOccupations> => {
+// Cambiar el estado de una ocupación (activar o inactivar)
+export const changeOccupationStatus = async (
+  id:  number,
+  newStatus: '1' | '2'
+): Promise<DataOccupations> => {
   try {
-    const data = [{ recPKey: id, recEstreg: 2 }];
+    const data = [{ recPKey: id, recEstreg: newStatus }];
     const response = await api.patch<DataOccupations>(`/api/utility/services/changestatus`, data);
-    //console.log("Estado de la ocupación cambiado exitosamente:", response.data);
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {

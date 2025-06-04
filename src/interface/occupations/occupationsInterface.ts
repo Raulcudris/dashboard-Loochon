@@ -1,86 +1,94 @@
-// **Información de una ocupación**
+// -----------------------------------------------
+// INTERFACES DE OCUPACIONES (Admin UI / API)
+// -----------------------------------------------
+
+// Información base para una nueva ocupación
 export interface NewOccupations {
-    recPrimarykeyRcws: number; // Clave primaria única de la ocupación
-    recIdentifikeyRcws: string; // Identificador único de la ocupación
-    recIdentifikeyRcwk: string;  // Identificador único de la categoría padre
-    recTitleworkRcws: string; // Título de la ocupación
-    recDescrworkRcws: string; // Descripción breve de la ocupación
-    recKeylocationRcws: string;  // Llave para búsqueda por palabras clave
-    recOrdviewkeyRcws: number;// Orden de visualización dentro de la categoría
-    recStatusregiRcws: string; // Estado del registro (1 = Activo, 0 = Inactivo)
-    //dlist: any | null; // Lista adicional de información (actualmente d Desconocida)
-  }
+  recPrimarykeyRcws: number;           // Clave primaria
+  recIdentifikeyRcws: string;          // Identificador único de la ocupación
+  recIdentifikeyRcwk: string;          // Identificador de la categoría padre
+  recTitleworkRcws: string;            // Título o nombre de la ocupación
+  recDescrworkRcws: string;            // Descripción de la ocupación
+  recKeylocationRcws: string;          // Palabras clave para búsqueda
+  recOrdviewkeyRcws: number;           // Orden de visualización
+  recStatusregiRcws: '1' | '2';        // Estado: 1=Activo, 2=Inactivo
+}
 
-  // Valores predeterminados para una nueva coordenada
-  export const defaultNewOccupations: NewOccupations = {
-    recPrimarykeyRcws: 1,
-    recIdentifikeyRcws: '',
-    recIdentifikeyRcwk: '',
-    recTitleworkRcws: 'Titulo', // Por defecto, Colombia
-    recDescrworkRcws : "Descripcion",
-    recKeylocationRcws : "Localizacion",
-    recOrdviewkeyRcws : 1,
-    recStatusregiRcws :"1"
-  };
+// Valores por defecto para formulario de creación
+export const defaultNewOccupations: NewOccupations = {
+  recPrimarykeyRcws: 1,
+  recIdentifikeyRcws: '',
+  recIdentifikeyRcwk: '',
+  recTitleworkRcws: 'Titulo',
+  recDescrworkRcws: 'Descripcion',
+  recKeylocationRcws: 'Localizacion',
+  recOrdviewkeyRcws: 1,
+  recStatusregiRcws: '1',
+};
 
-  // **Interfaz para editar una coordenada** (parcial de `NewCoordenate`)
-  export interface EditOccupations extends NewOccupations {
-    recPrimarykeyRcws: number; // Clave primaria única de la ocupación
-  }
-  
-  export interface Occupations extends NewOccupations {
-    recPrimarykeyRcws: number; // Clave primaria única de la ocupación
-    recStatusregiRcws: string; // Estado del registro (1 = Activo, 0 = Inactivo)
-  }
-  
-  // **Estructura de respuesta para ocupaciones**
-  export interface OcupationsResponse {
-    rspValue: string; // Valor de respuesta (por ejemplo, "OK")
-    rspMessage: string; // Mensaje de respuesta
-    rspParentKey: string; // Clave principal de la respuesta
-    rspAppKey: string; // Clave de la aplicación
-    rspPagination: RspPaginationOccupations; // Información de paginación
-    rspData: NewOccupations[]; // Lista de ocupaciones
-  }
-  
-  // **Información de paginación para ocupaciones**
-  export interface RspPaginationOccupations {
-    currentPage: number; // Página actual
-    totalPageSize: number; // Tamaño total de la página
-    totalResults: number; // Total de resultados
-    totalPages: number; // Total de páginas
-    hasNextPage: boolean; // Indicador si hay una página siguiente
-    hasPreviousPage: boolean; // Indicador si hay una página anterior
-    nextPageUrl: string; // URL de la siguiente página
-    previousPageUrl: string; // URL de la página anterior
-  }
-  
-  // **Estructura de respuesta de datos de la API**
-    export interface DataOccupations {
-      rspValue: string; // Valor de respuesta
-      rspMessage: string; // Mensaje de respuesta
-      rspParentKey: string; // Clave principal
-      rspAppKey: string; // Clave de la aplicación
-      rspPagination: RspPaginationOccupations; // Información de paginación
-      rspData: Occupations[]; // Lista de usuarios
-    }
+// Para edición: hereda de NewOccupations
+export interface EditOccupations extends NewOccupations {
+  recPrimarykeyRcws: number;
+}
 
-    // **Props para el componente `OccupationsTable`**
-    export interface OccupationsTableProps {
-      rows: Occupations[];
-      count: number;
-      page: number;
-      rowsPerPage: number;
-      onPageChange: (event: unknown, newPage: number) => void;
-      onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-      onRefresh: () => void;
-    }
-  
-    // **Props para el componente `OccupationsEditModal`**
-    export interface OccupationsEditModalProps {
-      open: boolean; // Estado del modal (abierto/cerrado)
-      onClose: () => void; // Método para cerrar el modal
-      occupations: EditOccupations | null; // Coordenada seleccionada para editar
-      onSave: () => void; // Método para guardar cambios y refrescar la lista
-    }
-    
+// Para consumo general en tablas u otras vistas
+export interface Occupations extends NewOccupations {
+  recPrimarykeyRcws: number;
+  recStatusregiRcws: '1' | '2';
+}
+
+// -----------------------------------------------
+// RESPUESTAS DE API Y PAGINACIÓN
+// -----------------------------------------------
+
+export interface RspPaginationOccupations {
+  currentPage: number;
+  totalPageSize: number;
+  totalResults: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  nextPageUrl: string;
+  previousPageUrl: string;
+}
+
+// Respuesta cuando los datos aún no están convertidos completamente
+export interface OcupationsResponse {
+  rspValue: string;
+  rspMessage: string;
+  rspParentKey: string;
+  rspAppKey: string;
+  rspPagination: RspPaginationOccupations;
+  rspData: NewOccupations[];
+}
+
+// Respuesta cuando ya se procesan como tipo Occupations completo
+export interface DataOccupations {
+  rspValue: string;
+  rspMessage: string;
+  rspParentKey: string;
+  rspAppKey: string;
+  rspPagination: RspPaginationOccupations;
+  rspData: Occupations[];
+}
+
+// -----------------------------------------------
+// PROPS DE COMPONENTES
+// -----------------------------------------------
+
+export interface OccupationsTableProps {
+  rows: Occupations[];
+  count: number;
+  page: number;
+  rowsPerPage: number;
+  onPageChange: (event: unknown, newPage: number) => void;
+  onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onRefresh: () => void;
+}
+
+export interface OccupationsEditModalProps {
+  open: boolean;
+  onClose: () => void;
+  occupations: EditOccupations | null;
+  onSave: () => void;
+}
