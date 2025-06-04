@@ -17,37 +17,41 @@ export default function Page(): React.JSX.Element {
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
   const [filter, setFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | '1' | '2'>('ALL');
 
   const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 
-    const fetchData = useCallback(async () => {
-      try {
-        const { categories: fetchedCategories } = await getAllCategories(page + 1);
-  
-        // Aplicar filtro y paginación
-        const filteredOccupations = fetchedCategories.filter((category) => {
-          const title = category.recTitleworkRcwk?.toLowerCase() || '';
-          const description = category.recDescrworkRcwk?.toLowerCase() || '';
-          const categoria = category.recIdentifikeyRcwk?.toLowerCase() || '';
-          return (
-            title.includes(filter.toLowerCase()) ||
-            description.includes(filter.toLowerCase()) ||
-            categoria.includes(filter.toLowerCase())
-          );
-        });
-  
-        const paginatedOccupations = filteredOccupations.slice(
-          page * rowsPerPage,
-          page * rowsPerPage + rowsPerPage
-        );
-  
-        setRows(paginatedOccupations);
-        setCount(filteredOccupations.length);
-      } catch (error) {
-        console.error('Error al cargar ocupaciones:', error);
-      }
-    }, [page, rowsPerPage, filter]); 
-  
+  const fetchData = useCallback(async () => {
+    try {
+      const { categories: fetchedCategories } = await getAllCategories(page + 1);
+
+      const filteredCategories = fetchedCategories.filter((category) => {
+        const title = category.recTitleworkRcwk?.toLowerCase() || '';
+        const description = category.recDescrworkRcwk?.toLowerCase() || '';
+        const categoria = category.recIdentifikeyRcwk?.toLowerCase() || '';
+        const status = category.recStatusregiRcwk?.toString();
+
+        const matchesSearch =
+          title.includes(filter.toLowerCase()) ||
+          description.includes(filter.toLowerCase()) ||
+          categoria.includes(filter.toLowerCase());
+
+        const matchesStatus = statusFilter === 'ALL' || status === statusFilter;
+
+        return matchesSearch && matchesStatus;
+      });
+
+      const paginatedCategories = filteredCategories.slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+      );
+
+      setRows(paginatedCategories);
+      setCount(filteredCategories.length);
+    } catch (error) {
+      console.error('Error al cargar categorías:', error);
+    }
+  }, [page, rowsPerPage, filter, statusFilter]);
 
   useEffect(() => {
     fetchData();
@@ -75,6 +79,11 @@ export default function Page(): React.JSX.Element {
           setFilter(newFilter);
           setPage(0);
         }}
+        onStatusChange={(newStatus) => {
+          setStatusFilter(newStatus);
+          setPage(0);
+        }}
+        currentStatus={statusFilter}
       />
 
       <CategoryTable

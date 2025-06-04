@@ -1,4 +1,4 @@
-'use client'; 
+'use client';
 
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -17,32 +17,32 @@ export default function Page(): React.JSX.Element {
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
   const [filter, setFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | '1' | '2'>('ALL');
 
-  // Estados para modales
   const [openAddModal, setOpenAddModal] = useState<boolean>(false);
-  const [, setOpenEditModal] = useState<boolean>(false);
-  const [, setOpenDeleteModal] = useState<boolean>(false);
-  const [, setSelectedOccupation] = useState<Occupations | null>(null);
-
 
   const fetchData = useCallback(async () => {
     try {
       const { occupations: fetchedOccupations } = await GetAllOccupations(page + 1);
 
-      // Aplicar filtro y paginación
       const filteredOccupations = fetchedOccupations.filter((occupation) => {
         const title = occupation.recTitleworkRcws?.toLowerCase() || '';
         const clave = occupation.recIdentifikeyRcws?.toLowerCase() || '';
         const description = occupation.recDescrworkRcws?.toLowerCase() || '';
         const location = occupation.recKeylocationRcws?.toLowerCase() || '';
         const categoria = occupation.recIdentifikeyRcwk?.toLowerCase() || '';
-        return (
+        const status = occupation.recStatusregiRcws?.toString();
+
+        const matchesSearch =
           title.includes(filter.toLowerCase()) ||
           description.includes(filter.toLowerCase()) ||
           location.includes(filter.toLowerCase()) ||
           clave.includes(filter.toLowerCase()) ||
-          categoria.includes(filter.toLowerCase())
-        );
+          categoria.includes(filter.toLowerCase());
+
+        const matchesStatus = statusFilter === 'ALL' || status === statusFilter;
+
+        return matchesSearch && matchesStatus;
       });
 
       const paginatedOccupations = filteredOccupations.slice(
@@ -55,11 +55,11 @@ export default function Page(): React.JSX.Element {
     } catch (error) {
       console.error('Error al cargar ocupaciones:', error);
     }
-  }, [page, rowsPerPage, filter]); 
+  }, [page, rowsPerPage, filter, statusFilter]);
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]); 
+  }, [fetchData]);
 
   return (
     <Stack spacing={3}>
@@ -78,10 +78,17 @@ export default function Page(): React.JSX.Element {
         </div>
       </Stack>
 
-      <OccupationsFilters onFilterChange={(newFilter) => {
-        setFilter(newFilter);
-        setPage(0);
-      }} />
+      <OccupationsFilters
+        onFilterChange={(newFilter) => {
+          setFilter(newFilter);
+          setPage(0);
+        }}
+        onStatusChange={(newStatus) => {
+          setStatusFilter(newStatus);
+          setPage(0);
+        }}
+        currentStatus={statusFilter}
+      />
 
       <OccupationsTable
         rows={rows}
@@ -91,14 +98,6 @@ export default function Page(): React.JSX.Element {
         onPageChange={(_event, newPage) => setPage(newPage)}
         onRowsPerPageChange={(e) => setRowsPerPage(parseInt(e.target.value, 10))}
         onRefresh={fetchData}
-        onEdit={(occupation) => {
-          setSelectedOccupation(occupation);
-          setOpenEditModal(true);
-        }}
-        onDelete={(occupation) => {
-          setSelectedOccupation(occupation);
-          setOpenDeleteModal(true);
-        }}
       />
 
       <AddOccupationsModal
