@@ -6,14 +6,26 @@ import axios from "axios";
 // Crear instancia para el microservicio Utility (puerto 6074)
 const api = createApiClient(services.utility);
 
-// Obtener ocupaciones con paginación y filtro
+// Obtener ocupaciones con paginación, búsqueda y estado opcional
 export const GetAllOccupations = async (
   currentPage: number = 1,
   pageSize: number = 20,
   parameter: string = "SEARCH",
-  filter: string = ""
+  searchText: string = "",
+  statusFilter: "ALL" | "1" | "2" = "ALL"
 ): Promise<{ occupations: NewOccupations[]; total: number }> => {
   try {
+    const trimmedText = searchText.trim();
+
+    let rawFilter = "";
+    if (trimmedText && statusFilter !== "ALL") {
+      rawFilter = `${trimmedText}|${statusFilter}`;
+    } else if (trimmedText) {
+      rawFilter = trimmedText;
+    } else if (statusFilter !== "ALL") {
+      rawFilter = `|${statusFilter}`;
+    }
+
     const response = await api.get<DataOccupations>(
       `/api/utility/services/pagesService`,
       {
@@ -21,7 +33,7 @@ export const GetAllOccupations = async (
           currentpage: currentPage,
           pagesize: pageSize,
           parameter,
-          filter: encodeURIComponent(filter),
+          filter: rawFilter, // Ya no es necesario usar encodeURIComponent
         },
       }
     );
@@ -30,7 +42,7 @@ export const GetAllOccupations = async (
 
     return {
       occupations: rspData,
-      total: rspPagination.totalResults,
+      total: rspPagination?.totalResults ?? 0,
     };
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {

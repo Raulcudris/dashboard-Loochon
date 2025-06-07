@@ -9,6 +9,8 @@ import { GetAllOccupations } from '@/services/index';
 import { Occupations } from '@/interface/index';
 import { OccupationsTable } from '@/components/dashboard/ocupations/list-ocupations/occupations-table';
 import { AddOccupationsModal } from '@/components/dashboard/ocupations/list-ocupations/modals/AddOccupationsModal';
+import { CategoryFilters as OccupationsFilters } from '@/components/dashboard/ocupations/list-ocupations/occupations-filters';
+
 
 export default function Page(): React.JSX.Element {
   const [rows, setRows] = useState<Occupations[]>([]);
@@ -21,19 +23,12 @@ export default function Page(): React.JSX.Element {
 
   const fetchData = useCallback(async () => {
     try {
-      const rawFilter =
-        statusFilter === 'ALL'
-          ? filter.trim()
-          : filter.trim()
-            ? `${filter.trim()}|${statusFilter}`
-            : `|${statusFilter}`;
-
       const { occupations: fetchedOccupations, total } = await GetAllOccupations(
         page + 1,
         rowsPerPage,
         "SEARCH",
-        rawFilter,      // 🔁 Aquí pasamos el filtro combinado
-        "ALL"           // 🔁 Ya no usamos el filtro de estado separado
+        filter,         // 🔄 Aquí va solo el texto
+        statusFilter    // 🔄 Aquí el estado ('ALL' | '1' | '2')
       );
 
       setRows(fetchedOccupations);
