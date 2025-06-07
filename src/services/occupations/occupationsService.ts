@@ -6,22 +6,39 @@ import axios from "axios";
 // Crear instancia para el microservicio Utility (puerto 6074)
 const api = createApiClient(services.utility);
 
-// Obtener todas las ocupaciones con paginación
+// Obtener ocupaciones con paginación y filtro
 export const GetAllOccupations = async (
-  page: number = 1
+  currentPage: number = 1,
+  pageSize: number = 20,
+  parameter: string = "SEARCH",
+  filter: string = ""
 ): Promise<{ occupations: NewOccupations[]; total: number }> => {
   try {
-    const response = await api.get<DataOccupations>(`/api/utility/services/getAllServices`, {
-      params: { page },
-    });
+    const response = await api.get<DataOccupations>(
+      `/api/utility/services/pagesService`,
+      {
+        params: {
+          currentpage: currentPage,
+          pagesize: pageSize,
+          parameter,
+          filter: encodeURIComponent(filter),
+        },
+      }
+    );
+
     const { rspData, rspPagination } = response.data;
-    return { occupations: rspData, total: rspPagination.totalResults };
+
+    return {
+      occupations: rspData,
+      total: rspPagination.totalResults,
+    };
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       console.error("Error al obtener ocupaciones:", error.response?.data || error.message);
     } else {
       console.error("Error inesperado al obtener ocupaciones:", error);
     }
+
     return { occupations: [], total: 0 };
   }
 };
@@ -66,7 +83,7 @@ export const editOccupation = async (occupation: NewOccupations): Promise<void> 
 export const deleteOccupation = async (id: number): Promise<void> => {
   try {
     const data = [{ recPKey: id }];
-    await api.delete(`/api/utility/services/delete`, {data});
+    await api.delete(`/api/utility/services/delete`, { data });
     //console.log("Ocupación eliminada exitosamente:", id);
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
@@ -79,7 +96,7 @@ export const deleteOccupation = async (id: number): Promise<void> => {
 
 // Cambiar el estado de una ocupación (activar o inactivar)
 export const changeOccupationStatus = async (
-  id:  number,
+  id: number,
   newStatus: '1' | '2'
 ): Promise<DataOccupations> => {
   try {

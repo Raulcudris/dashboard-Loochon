@@ -21,7 +21,7 @@ export const defaultNewOccupations: NewOccupations = {
   recIdentifikeyRcwk: '',
   recTitleworkRcws: 'Titulo',
   recDescrworkRcws: 'Descripcion',
-  recKeylocationRcws: 'Localizacion',
+  recKeylocationRcws: 'Palabras claves',
   recOrdviewkeyRcws: 1,
   recStatusregiRcws: '1',
 };

@@ -55,10 +55,11 @@ export function OccupationsTable({
         <Table sx={{ minWidth: 800 }}>
           <TableHead>
             <TableRow>
-              <TableCell align="center">Clave</TableCell>
+              <TableCell align="center">Codigo</TableCell>
               <TableCell align="center">Categoría</TableCell>
               <TableCell align="center">Título</TableCell>
               <TableCell align="center">Descripción</TableCell>
+              <TableCell align="center">Palabra Clave</TableCell>
               <TableCell align="center">Orden</TableCell>
               <TableCell align="center">Estado</TableCell>
               <TableCell align="center">Acciones</TableCell>
@@ -82,6 +83,7 @@ export function OccupationsTable({
                     <TableCell align="center">{row.recIdentifikeyRcwk}</TableCell>
                     <TableCell align="center">{row.recTitleworkRcws}</TableCell>
                     <TableCell align="center">{row.recDescrworkRcws}</TableCell>
+                    <TableCell align="center">{row.recKeylocationRcws}</TableCell>
                     <TableCell align="center">{row.recOrdviewkeyRcws}</TableCell>
                     <TableCell align="center">
                       <Typography

@@ -54,9 +54,10 @@ export function CategoryTable({
         <Table sx={{ minWidth: '800px' }}>
           <TableHead>
             <TableRow>
-              <TableCell align="center">Clave</TableCell>
+              <TableCell align="center">Codigo</TableCell>
               <TableCell align="center">Título</TableCell>
               <TableCell align="center">Descripción</TableCell>
+              <TableCell align="center">Palabra Clave</TableCell>
               <TableCell align="center">Imagen</TableCell>
               <TableCell align="center">Estado</TableCell>
               <TableCell align="center">Acciones</TableCell>
@@ -72,6 +73,7 @@ export function CategoryTable({
                     <TableCell align="center">{row.recIdentifikeyRcwk}</TableCell>
                     <TableCell align="center">{row.recTitleworkRcwk}</TableCell>
                     <TableCell align="center">{row.recDescrworkRcwk}</TableCell>
+                    <TableCell align="center">{row.recKeylocationRcwk}</TableCell>
                     <TableCell align="center">
                       {row.recImageviewRcwk ? (
                         <img src={row.recImageviewRcwk} alt="icon" width={40} />
@@ -146,7 +148,7 @@ export function CategoryTable({
         onPageChange={onPageChange}
         onRowsPerPageChange={onRowsPerPageChange}
         labelRowsPerPage="Filas por página"
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[5, 10, 25, 35 ,50]}
       />
 
       {selectedCategory && (

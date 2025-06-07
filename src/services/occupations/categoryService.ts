@@ -1,21 +1,48 @@
 import { createApiClient } from "@/config/apiRequest";
 import { services } from "@/config/services";
-import {  CategoryResponse , NewCategory } from "@/interface/occupations/categoryInterface";
+import { CategoryResponse, NewCategory } from "@/interface/occupations/categoryInterface";
 import axios from "axios";
 
 // Crear instancia para el microservicio Utility (puerto 6074)
 const api = createApiClient(services.utility);
 
-// Obtener todas las ocupaciones con paginación
+// Obtener categorías con paginación y filtros
 export const getAllCategories = async (
-  page: number = 1
+  currentPage: number = 1,
+  pageSize: number = 20,
+  parameter: string = "SEARCH",
+  searchText: string = "",
+  statusFilter: 'ALL' | '1' | '2' = 'ALL'
 ): Promise<{ categories: NewCategory[]; total: number }> => {
   try {
-    const response = await api.get<CategoryResponse>(`api/utility/services/getallCategory`, {
-      params: { page },
-    });
-   const { rspData, rspPagination } = response.data;
-    return { categories: rspData, total: rspPagination.totalResults };
+    const trimmedText = searchText.trim();
+
+    let rawFilter = "";
+    if (trimmedText && statusFilter !== "ALL") {
+      rawFilter = `${trimmedText}|${statusFilter}`;
+    } else if (trimmedText) {
+      rawFilter = trimmedText;
+    } else if (statusFilter !== "ALL") {
+      rawFilter = `|${statusFilter}`;
+    }
+
+    const response = await api.get<CategoryResponse>(
+      `/api/utility/services/pagesAllCategory`,
+      {
+        params: {
+          currentpage: currentPage,
+          pagesize: pageSize,
+          parameter,
+          filter: rawFilter
+        }
+      }
+    );
+
+    const { rspData, rspPagination } = response.data;
+    return {
+      categories: rspData,
+      total: rspPagination?.totalResults ?? 0
+    };
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       console.error("Error al obtener categorías:", error.response?.data || error.message);
@@ -25,8 +52,6 @@ export const getAllCategories = async (
     return { categories: [], total: 0 };
   }
 };
-
-
 
 // Crear una nueva categoría
 export const createCategory = async (newCategory: NewCategory): Promise<void> => {

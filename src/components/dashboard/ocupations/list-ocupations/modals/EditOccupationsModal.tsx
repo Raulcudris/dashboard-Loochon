@@ -78,6 +78,17 @@ export const EditOccupationsModal: React.FC<{
                 onChange={(e) => handleInputChange('recDescrworkRcws', e.target.value)}
               />
             </Grid>
+              <Grid item xs={12}>
+              <TextField
+                label="Palabras Claves"
+                value={updatedOccupation.recKeylocationRcws}
+                fullWidth
+                multiline
+                rows={3}
+                onChange={(e) => handleInputChange('recKeylocationRcws', e.target.value)}
+              />
+            </Grid>
+
             <Grid item xs={6}>
               <TextField
                 label="Orden de Visualización"

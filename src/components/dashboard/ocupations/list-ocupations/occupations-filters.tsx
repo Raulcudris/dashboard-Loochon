@@ -1,28 +1,41 @@
 'use client';
 
-import { OutlinedInput, InputAdornment, Select, MenuItem, Stack, Box } from '@mui/material';
+import {
+  OutlinedInput,
+  InputAdornment,
+  Select,
+  MenuItem,
+  Stack,
+  Box,
+} from '@mui/material';
 import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-interface OccupationsFiltersProps {
+interface CategoryFiltersProps {
   onFilterChange: (filter: string) => void;
   onStatusChange: (status: 'ALL' | '1' | '2') => void;
   currentStatus: 'ALL' | '1' | '2';
 }
 
-export const OccupationsFilters: React.FC<OccupationsFiltersProps> = ({
+export const CategoryFilters: React.FC<CategoryFiltersProps> = ({
   onFilterChange,
   onStatusChange,
-  currentStatus
+  currentStatus,
 }) => {
+  const [localFilter, setLocalFilter] = useState('');
+
+  useEffect(() => {
+    onFilterChange(localFilter);
+  }, [localFilter]);
+
   return (
     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
-      {/* Input con expansión automática para empujar el Select hacia la derecha */}
       <Box sx={{ flexGrow: 1, maxWidth: 550, width: '100%' }}>
         <OutlinedInput
-          onChange={(e) => onFilterChange(e.target.value)}
+          value={localFilter}
+          onChange={(e) => setLocalFilter(e.target.value)}
           fullWidth
-          placeholder="Buscar ocupación"
+          placeholder="Buscar categoría"
           startAdornment={
             <InputAdornment position="start">
               <MagnifyingGlassIcon fontSize="var(--icon-fontSize-md)" />
@@ -31,7 +44,6 @@ export const OccupationsFilters: React.FC<OccupationsFiltersProps> = ({
         />
       </Box>
 
-      {/* Select a la derecha */}
       <Select
         value={currentStatus}
         onChange={(e) => onStatusChange(e.target.value as 'ALL' | '1' | '2')}

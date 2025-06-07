@@ -7,7 +7,6 @@ import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import React, { useEffect, useState, useCallback } from 'react';
 import { GetAllOccupations } from '@/services/index';
 import { Occupations } from '@/interface/index';
-import { OccupationsFilters } from '@/components/dashboard/ocupations/list-ocupations/occupations-filters';
 import { OccupationsTable } from '@/components/dashboard/ocupations/list-ocupations/occupations-table';
 import { AddOccupationsModal } from '@/components/dashboard/ocupations/list-ocupations/modals/AddOccupationsModal';
 
@@ -18,42 +17,29 @@ export default function Page(): React.JSX.Element {
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
   const [filter, setFilter] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | '1' | '2'>('ALL');
-
   const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 
   const fetchData = useCallback(async () => {
     try {
-      const { occupations: fetchedOccupations } = await GetAllOccupations(page + 1);
+      const rawFilter =
+        statusFilter === 'ALL'
+          ? filter.trim()
+          : filter.trim()
+            ? `${filter.trim()}|${statusFilter}`
+            : `|${statusFilter}`;
 
-      const filteredOccupations = fetchedOccupations.filter((occupation) => {
-        const title = occupation.recTitleworkRcws?.toLowerCase() || '';
-        const clave = occupation.recIdentifikeyRcws?.toLowerCase() || '';
-        const description = occupation.recDescrworkRcws?.toLowerCase() || '';
-        const location = occupation.recKeylocationRcws?.toLowerCase() || '';
-        const categoria = occupation.recIdentifikeyRcwk?.toLowerCase() || '';
-        const status = occupation.recStatusregiRcws?.toString();
-
-        const matchesSearch =
-          title.includes(filter.toLowerCase()) ||
-          description.includes(filter.toLowerCase()) ||
-          location.includes(filter.toLowerCase()) ||
-          clave.includes(filter.toLowerCase()) ||
-          categoria.includes(filter.toLowerCase());
-
-        const matchesStatus = statusFilter === 'ALL' || status === statusFilter;
-
-        return matchesSearch && matchesStatus;
-      });
-
-      const paginatedOccupations = filteredOccupations.slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
+      const { occupations: fetchedOccupations, total } = await GetAllOccupations(
+        page + 1,
+        rowsPerPage,
+        "SEARCH",
+        rawFilter,      // 🔁 Aquí pasamos el filtro combinado
+        "ALL"           // 🔁 Ya no usamos el filtro de estado separado
       );
 
-      setRows(paginatedOccupations);
-      setCount(filteredOccupations.length);
+      setRows(fetchedOccupations);
+      setCount(total);
     } catch (error) {
-      console.error('Error al cargar ocupaciones:', error);
+      console.error("Error al cargar ocupaciones:", error);
     }
   }, [page, rowsPerPage, filter, statusFilter]);
 

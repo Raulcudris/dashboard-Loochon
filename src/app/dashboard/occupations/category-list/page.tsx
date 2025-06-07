@@ -18,44 +18,34 @@ export default function Page(): React.JSX.Element {
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
   const [filter, setFilter] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | '1' | '2'>('ALL');
-
   const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 
-  const fetchData = useCallback(async () => {
-    try {
-      const { categories: fetchedCategories } = await getAllCategories(page + 1);
+    const fetchData = useCallback(async () => {
+      try {
+        const rawFilter =
+         statusFilter === 'ALL'
+           ? filter.trim()
+           : filter.trim()
+            ? `${filter.trim()}|${statusFilter}`
+            : `|${statusFilter}`;
 
-      const filteredCategories = fetchedCategories.filter((category) => {
-        const title = category.recTitleworkRcwk?.toLowerCase() || '';
-        const description = category.recDescrworkRcwk?.toLowerCase() || '';
-        const categoria = category.recIdentifikeyRcwk?.toLowerCase() || '';
-        const status = category.recStatusregiRcwk?.toString();
+        const { categories: fetchedCategories, total } = await getAllCategories(
+        page + 1,
+        rowsPerPage,
+        "SEARCH",
+        rawFilter,      // 🔁 Aquí pasamos el filtro combinado
+        "ALL"           // 🔁 Ya no usamos el filtro de estado separado
+        );
+        setRows(fetchedCategories);
+        setCount(total); // total de backend
+      } catch (error) {
+        console.error('Error al cargar categorías:', error);
+      }
+    }, [page, rowsPerPage, filter, statusFilter]);
 
-        const matchesSearch =
-          title.includes(filter.toLowerCase()) ||
-          description.includes(filter.toLowerCase()) ||
-          categoria.includes(filter.toLowerCase());
-
-        const matchesStatus = statusFilter === 'ALL' || status === statusFilter;
-
-        return matchesSearch && matchesStatus;
-      });
-
-      const paginatedCategories = filteredCategories.slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      );
-
-      setRows(paginatedCategories);
-      setCount(filteredCategories.length);
-    } catch (error) {
-      console.error('Error al cargar categorías:', error);
-    }
-  }, [page, rowsPerPage, filter, statusFilter]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+      useEffect(() => {
+        fetchData();
+      }, [fetchData]);
 
   return (
     <Stack spacing={3}>
