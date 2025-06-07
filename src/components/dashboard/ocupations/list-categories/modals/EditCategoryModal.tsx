@@ -32,15 +32,16 @@ export const EditCategoryModal: React.FC<{
       {({ showSnackbar }) => (
         <>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={2}>
               <TextField
-                label="Clave"
+                label="Codigo"
                 value={updatedCategory.recIdentifikeyRcwk || ''}
                 fullWidth
+                disabled
                 onChange={(e) => handleInputChange('recIdentifikeyRcwk', e.target.value)}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={10}>
               <TextField
                 label="Título"
                 value={updatedCategory.recTitleworkRcwk || ''}
@@ -74,7 +75,7 @@ export const EditCategoryModal: React.FC<{
                 onChange={(e) => handleInputChange('recImageviewRcwk', e.target.value)}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={2}>
               <TextField
                 label="Estado"
                 value={updatedCategory.recStatusregiRcwk}

@@ -1,5 +1,4 @@
 'use client';
-
 import React from 'react';
 import { Button, Stack, Typography } from '@mui/material';
 import { BaseModal } from './BaseModal';

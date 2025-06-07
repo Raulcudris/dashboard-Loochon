@@ -46,8 +46,9 @@ export const EditOccupationsModal: React.FC<{
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField
-                label="Clave"
+                label="Codigo"
                 value={updatedOccupation.recIdentifikeyRcws}
+                disabled
                 fullWidth
                 onChange={(e) => handleInputChange('recIdentifikeyRcws', e.target.value)}
               />
@@ -56,6 +57,7 @@ export const EditOccupationsModal: React.FC<{
               <TextField
                 label="Categoría"
                 value={updatedOccupation.recIdentifikeyRcwk}
+                disabled
                 fullWidth
                 onChange={(e) => handleInputChange('recIdentifikeyRcwk', e.target.value)}
               />

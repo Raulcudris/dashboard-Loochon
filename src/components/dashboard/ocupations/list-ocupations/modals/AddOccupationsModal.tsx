@@ -41,7 +41,7 @@ export const AddOccupationsModal: React.FC<{
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField
-                label="Clave"
+                label="Cdigo"
                 value={newOccupation.recIdentifikeyRcws}
                 fullWidth
                 onChange={(e) => handleInputChange('recIdentifikeyRcws', e.target.value)}
@@ -71,6 +71,16 @@ export const AddOccupationsModal: React.FC<{
                 multiline
                 rows={3}
                 onChange={(e) => handleInputChange('recDescrworkRcws', e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Palabras Claves"
+                value={newOccupation.recKeylocationRcws}
+                fullWidth
+                multiline
+                rows={3}
+                onChange={(e) => handleInputChange('recKeylocationRcws', e.target.value)}
               />
             </Grid>
             <Grid item xs={6}>
